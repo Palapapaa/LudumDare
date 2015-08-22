@@ -17,9 +17,20 @@ var loadState = {
         game.load.setPreloadSprite(this.bar);
 
 
-
-        // Chargement des images
-        game.load.image('hollande' , 'assets/graphics/hollande_sprite.png');
+        
+        //load things
+        for(var i = 0,l = thingsData.length;i<l;i++){
+            game.load.image('sprite_'+thingsData[i].id , 'assets/graphics/sprite_'+thingsData[i].id+'.png');
+            game.load.image('icon_'+thingsData[i].id , 'assets/graphics/icon_'+thingsData[i].id+'.png');
+            game.load.image('trajectoire_'+thingsData[i].id , 'assets/graphics/trajectoire_'+thingsData[i].id+'.png');
+            game.load.audio('sound_'+thingsData[i].id,['assets/audio/sound_'+thingsData[i].id+'.wav',]);
+        }
+        
+        //load enemies
+        for(var i = 0,l = enemyData.length;i<l;i++){
+            game.load.image('enemy_'+enemyData[i].id , 'assets/graphics/enemy_'+enemyData[i].id+'.png');
+        }
+        // Chargement des images;
         game.load.image('monster' , 'assets/graphics/monster.png');
         game.load.image('lifebar' , 'assets/graphics/lifebar.png');
 
