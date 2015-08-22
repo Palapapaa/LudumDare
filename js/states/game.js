@@ -174,10 +174,10 @@ var gameState = {
     },
 
     addLifebar: function(){
-        this.lifebar     = game.add.sprite(game.global.gameWidth/2,35,"lifebar");
-        this.lifebar.anchor.setTo(0.5,0.5);
-        this.lifebarFull = game.add.sprite(game.global.gameWidth/2,35,"lifebar_full");
-        this.lifebarFull.anchor.setTo(0.5,0.5);
+        this.lifebar     = game.add.sprite(game.global.gameWidth/2,25,"lifebar");
+        this.lifebar.x-=this.lifebar.width/2;
+        this.lifebarFull = game.add.sprite(game.global.gameWidth/2,25,"lifebar_full");
+        this.lifebarFull.x-=this.lifebarFull.width/2;
 
     },
 
@@ -390,12 +390,12 @@ var gameState = {
             if(this.defaultCard.timer<=0){
 
                 this.defaultCard.timer=this.defaultCard.cooldown;
-                this.addProjectile(650+thing.offset.x,200+thing.offset.y,thing.id);
+                this.addProjectile(this.monster.x+thing.offset.x,this.monster.y+thing.offset.y,thing.id);
 
             }
         }else{
 
-            this.addProjectile(650+thing.offset.x,200+thing.offset.y,thing.id);
+            this.addProjectile(this.monster.x+thing.offset.x,this.monster.y+thing.offset.y,thing.id);
             this.removeFromHand(sprite.handIndex);
         }
     },
