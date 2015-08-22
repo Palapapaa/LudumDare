@@ -7,7 +7,7 @@ var thingsData = {
         "cooldown" : 120,
         "speed" : 3,
         "properties" : ["piercing",],
-        "offset" : {"x" : -10, "y" : 120},
+        "offset" : {"x" : -10, "y" : 130},
 
     },
     'caddie' : {
