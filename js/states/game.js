@@ -173,8 +173,7 @@ var gameState = {
         this.deck=[];
         
         for(var i=0; i<15;i++){
-            //this.deck.push(thingsData.caddie);
-            this.deck.push("caddie");
+            this.deck.push(thingsData.caddie);
         }
         this.resetHand();
         this.drawCards(3);
@@ -205,8 +204,7 @@ var gameState = {
                 }
                 
                 cardObj.template = this.game.add.sprite(300+this.hand.length * 70, 475, 'card_template');                
-                //cardObj.icon = this.game.add.sprite(300+this.hand.length * 70 + 14, 500, 'icon_'+card.id);
-                cardObj.icon = this.game.add.sprite(300+this.hand.length * 70 + 14, 500, 'icon_'+card);
+                cardObj.icon = this.game.add.sprite(300+this.hand.length * 70 + 14, 500, 'icon_'+card.id);
                 cardObj.template.inputEnabled=true;
                 cardObj.icon.inputEnabled=true;
                 cardObj.template.events.onInputDown.add(onclick,this);

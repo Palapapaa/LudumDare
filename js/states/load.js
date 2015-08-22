@@ -21,16 +21,16 @@ var loadState = {
         //load things
         var keys = Object.keys(thingsData);
         for(var i = 0,l = keys.length;i<l;i++){
-            game.load.image('sprite_'+keys[i].id , 'assets/graphics/sprite_'+keys[i].id+'.png');
-            game.load.image('icon_'+keys[i].id , 'assets/graphics/icon_'+keys[i].id+'.png');
-            game.load.image('trajectoire_'+keys[i].trajectory , 'assets/graphics/trajectoire_'+keys[i].trajectory+'.png');
-            game.load.audio('sound_'+keys[i].id,['assets/audio/sound_'+keys[i].id+'.wav',]);
+            game.load.image('sprite_'+keys[i] , 'assets/graphics/sprite_'+keys[i]+'.png');
+            game.load.image('icon_'+keys[i] , 'assets/graphics/icon_'+keys[i]+'.png');
+            game.load.image('trajectoire_'+thingsData[keys[i]].trajectory , 'assets/graphics/trajectoire_'+thingsData[keys[i]].trajectory+'.png');
+            game.load.audio('sound_'+keys[i],['assets/audio/sound_'+keys[i]+'.wav',]);
         }
 
         //load enemies
         var keys = Object.keys(thingsData);
         for(var i = 0,l = enemyData.length;i<l;i++){
-            game.load.image('enemy_'+keys[i].id , 'assets/graphics/enemy_'+keys[i].id+'.png');
+            game.load.image('enemy_'+keys[i] , 'assets/graphics/enemy_'+keys[i]+'.png');
         }
         // Chargement des images;
         game.load.image('monster' , 'assets/graphics/monster.png');
