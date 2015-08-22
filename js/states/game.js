@@ -113,14 +113,14 @@ var gameState = {
 
         //TODO Parametrer dans le niveau l'interval d'apparition des ennelus
         this.loopEnnemies = game.time.events.loop(2250, this.addEnnemy, this);
-        
+
         //Particules feu
         this.emitterFire = game.add.emitter(0, 0 , 35);
         this.emitterFire.setXSpeed(-250, 250);
         this.emitterFire.setYSpeed(-250, 250);
         this.emitterFire.gravity = 0;
         this.emitterFire.makeParticles('particle_fire');
-        
+
 
 
     },
@@ -131,6 +131,10 @@ var gameState = {
       if(nbEnnemies > 0){
           for(var i = 0, l = nbEnnemies; i < l; ++i){
             if(this.ennemies.children[i].alive === true){
+              if(this.ennemies.children[i].body.velocity.y >  0 && this.ennemies.children[i].y > 250)
+                this.ennemies.children[i].body.velocity.y = 0;
+
+
               if(this.ennemies.children[i].x > (585 -  this.ennemies.children[i].range)){
                 this.ennemies.children[i].body.velocity.x = 0;
                 if(this.ennemies.children[i].attackCooldown > 0)
@@ -216,12 +220,11 @@ var gameState = {
        ennemy.animations.add('move', [0,1], 12, true);
        ennemy.animations.play('move');
 
-
           var spawnY;
           switch(type){
               case "armored":
               case "base": spawnY=this.randomGenerator.integerInRange(350,400); break;
-
+              case "flying_base": spawnY=this.randomGenerator.integerInRange(100,200); break;
           }
 
 
@@ -229,6 +232,10 @@ var gameState = {
 
         ennemy.range = ennemyData['range'];
         ennemy.body.velocity.x = ennemyData['speed'] * 60;
+        if(ennemyData['pattern'] === "flying"){
+          ennemy.body.velocity.y = ennemyData['speed'] * 30;
+
+        }
       }
     },
 
