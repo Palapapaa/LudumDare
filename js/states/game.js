@@ -25,7 +25,7 @@ var gameState = {
 
         game.physics.startSystem(Phaser.Physics.ARCADE);
         //Ajout du background
-        game.add.sprite(0,0,"background");
+        game.add.sprite(-20,-20,"background");
         //cards not yet drawn by the player
         this.deck = [];
         // cards currently visible on the GUI the player can use
@@ -34,7 +34,7 @@ var gameState = {
 
         //score display
         this.score = 0;
-        this.scoreDisplay = game.add.text(20,20,"Score : 00000000",{});
+        this.scoreDisplay = game.add.text(20,20,"Score : 00000000",{"fill" : "#CACACA"});
 
 
         this.availableEnemies = ["base"];
@@ -60,8 +60,9 @@ var gameState = {
         //default card that is always available but has a cooldown
         this.defaultCard = {"thing" : thingsData.rock, "cooldown": 180, "timer" : 0};
 
-        this.defaultCard.template = this.game.add.sprite(100, 475, 'card_template');
-        this.defaultCard.icon = this.game.add.sprite(100 + 14, 500, 'icon_'+this.defaultCard.thing.id);
+        this.defaultCard.template = this.game.add.sprite(100, 495, 'card_template');
+        this.defaultCard.icon = this.game.add.sprite(100 + 32, 532, 'icon_'+this.defaultCard.thing.id);
+        this.defaultCard.icon.anchor.setTo(0.5, 0.5);
         this.defaultCard.overlay = this.game.add.sprite(100, 575, 'card_overlay');
         this.defaultCard.overlay.scale.setTo(1,0);
         this.defaultCard.overlay.alpha=0.8;
@@ -82,11 +83,10 @@ var gameState = {
 
 
         //Ajout du monstre
-        this.monster = game.add.sprite(700, 220, 'monster');
+        this.monster = game.add.sprite(650, 240, 'monster');
         this.monster.checkWorldBounds = true;
         this.monster.outOfBoundsKill = true;
         this.monster.life = 100;
-        this.monster.reset(650, 220);
         this.monster.enableBody = true;
 
 
@@ -174,8 +174,10 @@ var gameState = {
     },
 
     addLifebar: function(){
-      this.lifebar     = game.add.sprite(300,10,"lifebar");
-      this.lifebarFull = game.add.sprite(300,10,"lifebar_full");
+        this.lifebar     = game.add.sprite(game.global.gameWidth/2,25,"lifebar");
+        this.lifebar.x-=this.lifebar.width/2;
+        this.lifebarFull = game.add.sprite(game.global.gameWidth/2,25,"lifebar_full");
+        this.lifebarFull.x-=this.lifebarFull.width/2;
 
     },
 
@@ -201,7 +203,7 @@ var gameState = {
           var spawnY;
           switch(type){
               case "armored":
-              case "base": spawnY=this.randomGenerator.integerInRange(300,350); break;
+              case "base": spawnY=this.randomGenerator.integerInRange(350,400); break;
 
           }
 
@@ -365,8 +367,9 @@ var gameState = {
 
     addCardToHand : function(cardObj,handIndex){
 
-        cardObj.template = this.game.add.sprite(200+handIndex * 70, 475, 'card_template');
-        cardObj.icon = this.game.add.sprite(200+handIndex * 70 + 14, 500, 'icon_'+cardObj.thing.id);
+        cardObj.template = this.game.add.sprite(200+handIndex * 70, 495, 'card_template');
+        cardObj.icon = this.game.add.sprite(200+handIndex * 70 + 32, 532, 'icon_'+cardObj.thing.id);
+        cardObj.icon.anchor.setTo(0.5, 0.5);
         cardObj.template.inputEnabled=true;
         cardObj.icon.inputEnabled=true;
         cardObj.template.thing=cardObj.thing;
@@ -387,12 +390,12 @@ var gameState = {
             if(this.defaultCard.timer<=0){
 
                 this.defaultCard.timer=this.defaultCard.cooldown;
-                this.addProjectile(650+thing.offset.x,200+thing.offset.y,thing.id);
+                this.addProjectile(this.monster.x+thing.offset.x,this.monster.y+thing.offset.y,thing.id);
 
             }
         }else{
 
-            this.addProjectile(650+thing.offset.x,200+thing.offset.y,thing.id);
+            this.addProjectile(this.monster.x+thing.offset.x,this.monster.y+thing.offset.y,thing.id);
             this.removeFromHand(sprite.handIndex);
         }
     },
