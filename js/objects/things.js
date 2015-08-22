@@ -6,7 +6,8 @@ var thingsData = {
         "cost" : 0,
         "cooldown" : 120,
         "speed" : 3,
-        "properties" : ["piercing",]
+        "properties" : ["piercing",],
+        "offset" : {"x" : -10, "y" : 120},
 
     },
     'caddie' : {
@@ -15,7 +16,8 @@ var thingsData = {
         "trajectory" : "groundstraight",
         "cost" : 0,
         "speed" : 4,
-        "properties" : ["piercing",]
+        "properties" : ["piercing",],
+        "offset" : {"x" : -10, "y" : 200},
 
     },
 };

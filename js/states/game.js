@@ -31,13 +31,38 @@ var gameState = {
         this.handSprites = [];
         
         
-        this.drawCooldown=300;
-        this.drawTimer=0;
+         //Sons
+        this.thingsSounds = {};        
+        var keys = Object.keys(thingsData);
+        for(var i = 0,l = keys.length;i<l;i++){
+            this.thingsSounds[keys[i]] = game.add.audio("sound_"+keys[i]);
+        }
+        
+        this.drawCooldown=5000;
+        this.autoDraw = game.time.events.loop(this.drawCooldown, this.drawCards, this);
         
         this.initDeck();
+        
+        //default card that is always available but has a cooldown
+        this.defaultCard = {"thing" : thingsData.rock, "cooldown": 180, "timer" : 0};
+        
+        this.defaultCard.template = this.game.add.sprite(100, 475, 'card_template');                
+        this.defaultCard.icon = this.game.add.sprite(100 + 14, 500, 'icon_'+this.defaultCard.thing.id);
+        this.defaultCard.overlay = this.game.add.sprite(100, 575, 'card_overlay'); 
+        this.defaultCard.overlay.scale.setTo(1,0);
+        this.defaultCard.overlay.alpha=0.8;
+        this.defaultCard.template.inputEnabled=true;
+        this.defaultCard.icon.inputEnabled=true;
+        this.defaultCard.template.thing=this.defaultCard.thing;
+        this.defaultCard.icon.thing=this.defaultCard.thing;
+        this.defaultCard.template.defaultCard=true;
+        this.defaultCard.icon.defaultCard=true;        
+        this.defaultCard.template.events.onInputDown.add(this.cardOnClick,this);
+        this.defaultCard.icon.events.onInputDown.add(this.cardOnClick,this);
+        
 
         this.randomGenerator = new Phaser.RandomDataGenerator(1337);
-         //Sons
+        
 
         // Groupe monstre
         this.monsters = game.add.group();
@@ -72,7 +97,6 @@ var gameState = {
         //TODO Parametrer dans le niveau l'interval d'apparition des ennelus
         this.loopEnnemies = game.time.events.loop(1000, this.addEnnemy, this);
 
-        this.addProjectile(500,300, 'rock');
 
     },
 
@@ -86,25 +110,45 @@ var gameState = {
           }
           game.physics.arcade.overlap(this.projectiles, this.ennemies, this.damageEnnemy, null, this);
       }
+        //update projectiles according to their trajectory
       var nbProjectiles = this.projectiles.children.length;
       if(nbProjectiles  > 0){
         for(var i = 0, l = nbProjectiles; i < l; ++i){
+            if(this.projectiles.children[i].alive){
+                switch(this.projectiles.children[i].trajectory){
+                    case "lob" : {
+                        this.projectiles.children[i].angle-=10;
+                        this.projectiles.children[i].x -= this.projectiles.children[i].speedX;
+                        this.projectiles.children[i].y -= this.projectiles.children[i].speedY;
+                        this.projectiles.children[i].speedY -= 0.1;
+                        if(this.projectiles.children[i].y>450){
+                            this.projectiles.children[i].kill();
+                        }
+                        break;   
+                    }
+                    case "groundstraight" : {
+                        this.projectiles.children[i].x -= this.projectiles.children[i].speedX;
+                        if(this.projectiles.children[i].x<-50){
+                            this.projectiles.children[i].kill();
+                        }
+                        break;   
+                    }
 
-          this.projectiles.children[i].x -= this.projectiles.children[i].speedX;
-        //  this.projectiles.children[i].speedX -= 0.01;
-          this.projectiles.children[i].y -= this.projectiles.children[i].speedY;
-          this.projectiles.children[i].speedY -= 0.005;
+                }
+                
+            }
+            
+          
         }
 
       }
-        
-        
-        this.drawTimer++;
-        if(this.drawTimer>this.drawCooldown){
-            console.log("drawing card...");
-            this.drawTimer=0;
-            this.drawCards(1);
+       
+        if(this.defaultCard.timer>=0){
+            this.defaultCard.timer--;
+            this.defaultCard.overlay.scale.setTo(1,-this.defaultCard.timer/this.defaultCard.cooldown);
         }
+        
+        
     },
 
     addMonster : function(x,y){
@@ -145,17 +189,20 @@ var gameState = {
 
 
       if(projectile && typeof projectileData !== "undefined"){
-        //Donnée en dur à modifier TODO
+          
+        this.thingsSounds[type].play();
+        projectile.angle=0;
         projectile.damage = projectileData.damage;
         projectile.properties = projectileData.properties;
-
+        projectile.trajectory=projectileData.trajectory;
         projectile.speedX = projectileData.speed;
         projectile.speedY = projectileData.speed;
         projectile.projectileId = this.nextProjectileId;
         this.nextProjectileId++;
         projectile.checkWorldBounds = true;
         projectile.outOfBoundsKill = true;
-
+        projectile.anchor.setTo(0.5, 0.5);
+        projectile.loadTexture("sprite_"+type);
         projectile.reset(x, y);
       }
     },
@@ -167,10 +214,10 @@ var gameState = {
 
         ennemy.life -= projectile.damage;
         //Si le projectile n'est pas perforant
-        if(projectile.properties.indexOf('percing') === -1){
+        if(projectile.properties.indexOf('piercing') === -1){
           projectile.kill();
         }
-        if(ennemy.life === 0){
+        if(ennemy.life <= 0){
           ennemy.kill();
         }
         console.log(ennemy.life);
@@ -215,11 +262,15 @@ var gameState = {
     },
     
     drawCards : function(howMany){
+        
+        if(!howMany)howMany=1;
+        console.log("trying to draw "+howMany+" card(s)...");
         for(var i=0; i<howMany;i++){
             if(this.hand.length<5){       
                 
                 var card = this.deck.shift();
                 if(typeof(card) !== "undefined"){
+                    console.log("drawing card...");
                     var cardObj = {"thing":card};
                     cardObj=this.addCardToHand(cardObj,this.hand.length);
                     this.hand.push(cardObj);
@@ -236,19 +287,32 @@ var gameState = {
         cardObj.icon = this.game.add.sprite(200+handIndex * 70 + 14, 500, 'icon_'+cardObj.thing.id);
         cardObj.template.inputEnabled=true;
         cardObj.icon.inputEnabled=true;
-        cardObj.template.events.onInputDown.add(this.cardOnClick,this);
-        cardObj.icon.events.onInputDown.add(this.cardOnClick,this);
         cardObj.template.thing=cardObj.thing;
         cardObj.icon.thing=cardObj.thing;
         cardObj.template.handIndex=handIndex;
-        cardObj.icon.handIndex=handIndex;
+        cardObj.icon.handIndex=handIndex;        
+        cardObj.template.events.onInputDown.add(this.cardOnClick,this);
+        cardObj.icon.events.onInputDown.add(this.cardOnClick,this);
+        
         return cardObj;
         
     },
     
     cardOnClick : function(sprite, pointer){
         console.log(sprite.thing);
-        this.removeFromHand(sprite.handIndex);
+        var thing = sprite.thing;
+        if(sprite.defaultCard){
+            if(this.defaultCard.timer<=0){
+                
+                this.defaultCard.timer=this.defaultCard.cooldown;
+                this.addProjectile(650+thing.offset.x,200+thing.offset.y,thing.id);
+                
+            }
+        }else{
+            
+            this.addProjectile(650+thing.offset.x,200+thing.offset.y,thing.id);
+            this.removeFromHand(sprite.handIndex);
+        }
     }
 
 
