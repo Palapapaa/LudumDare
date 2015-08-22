@@ -29,16 +29,10 @@ var gameState = {
         // cards currently visible on the GUI the player can use
         this.hand = [];
         this.handSprites = [];
-<<<<<<< HEAD
-
-
-=======
-
 
         this.drawCooldown=300;
         this.drawTimer=0;
 
->>>>>>> dc31fa49b6390ea14bbaa60a946313496aac2beb
         this.initDeck();
 
         this.randomGenerator = new Phaser.RandomDataGenerator(1337);
