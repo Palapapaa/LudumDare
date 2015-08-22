@@ -23,7 +23,7 @@ var loadState = {
         for(var i = 0,l = keys.length;i<l;i++){
             game.load.image('sprite_'+keys[i] , 'assets/graphics/sprite_'+keys[i]+'.png');
             game.load.image('icon_'+keys[i] , 'assets/graphics/icon_'+keys[i]+'.png');
-            game.load.image('trajectoire_'+thingsData[keys[i]].trajectory , 'assets/graphics/trajectoire_'+thingsData[keys[i]].trajectory+'.png');
+            game.load.image('trajectory_'+thingsData[keys[i]].trajectory , 'assets/graphics/trajectoire_'+thingsData[keys[i]].trajectory+'.png');
             game.load.audio('sound_'+keys[i],['assets/audio/sound_'+keys[i]+'.wav',]);
         }
 
@@ -40,6 +40,7 @@ var loadState = {
 
         game.load.image('card_template' , 'assets/graphics/card_template.png');
         game.load.image('card_overlay' , 'assets/graphics/card_overlay.png');
+        game.load.image('card_cooldown' , 'assets/graphics/card_cooldown.png');
         game.load.image('lifebar' , 'assets/graphics/lifebar.png');
         game.load.image('lifebar_full' , 'assets/graphics/lifebar_full.png');
         game.load.image('background' , 'assets/graphics/background_game.png');
@@ -48,8 +49,10 @@ var loadState = {
 
 
         // Chargement des sons
-        game.load.audio('hollande1',['assets/audio/hollande1.ogg',]);
-        game.load.audio('hollande2',['assets/audio/hollande2.ogg',]);
+        game.load.audio('draw_rare',['assets/audio/draw_rare.wav',]);
+        game.load.audio('enemy_destroyed',['assets/audio/enemy_destroyed.wav',]);
+        game.load.audio('enemy_hit',['assets/audio/enemy_hit.wav',]);
+        game.load.audio('player_hit',['assets/audio/player_hit.wav',]);
     },
     create : function(){
         // On démarre l'état du menu
