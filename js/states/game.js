@@ -40,6 +40,7 @@ var gameState = {
         this.availableEnemies = ["base"];
         this.totalEnemySpawnChance = enemyData.base.spawnchance;
         this.enemiesKilled = 0;
+        this.enemiesGotSpeedBoost = false;
 
          //Sons
         this.gameSounds = {};
@@ -128,12 +129,13 @@ var gameState = {
     update : function(){
       //mise à jour des ennemis
       var nbEnnemies = this.ennemies.children.length;
+      var gotBoostNextFrame = false;
       if(nbEnnemies > 0){
           for(var i = 0, l = nbEnnemies; i < l; ++i){
             if(this.ennemies.children[i].alive === true){
-              if(this.ennemies.children[i].body.velocity.y >  0 && this.ennemies.children[i].y > 250)
+              if(this.ennemies.children[i].body.velocity.y >  0 && this.ennemies.children[i].y > 250){
                 this.ennemies.children[i].body.velocity.y = 0;
-
+              }
 
               if(this.ennemies.children[i].x > (585 -  this.ennemies.children[i].range)){
                 this.ennemies.children[i].body.velocity.x = 0;
@@ -143,12 +145,21 @@ var gameState = {
                   this.ennemyAttackMonster(this.ennemies.children[i].damage);
                   this.ennemies.children[i].attackCooldown = 60;
                 }
+
+                if(this.ennemies.children[i].type === "support"){
+                  gotBoostNextFrame = true;
+                }
+              }else{
+                if(this.enemiesGotSpeedBoost === true){
+                  this.ennemies.children[i].x+=1;
+                }
               }
             }
           }
           game.physics.arcade.overlap(this.projectiles, this.ennemies, this.damageEnnemy, null, this);
       }
-        //update projectiles according to their trajectory
+      this.enemiesGotSpeedBoost = gotBoostNextFrame;
+      //update projectiles according to their trajectory
       var nbProjectiles = this.projectiles.children.length;
       if(nbProjectiles  > 0){
         for(var i = 0, l = nbProjectiles; i < l; ++i){
@@ -175,8 +186,6 @@ var gameState = {
                 }
 
             }
-
-
         }
 
       }
@@ -223,11 +232,12 @@ var gameState = {
           var spawnY;
           switch(type){
               case "armored":
+              case "support": spawnY=this.randomGenerator.integerInRange(350,400); break;
               case "base": spawnY=this.randomGenerator.integerInRange(350,400); break;
               case "flying_base": spawnY=this.randomGenerator.integerInRange(100,200); break;
           }
 
-
+        ennemy.type = type;
         ennemy.reset(0 , spawnY);
 
         ennemy.range = ennemyData['range'];
