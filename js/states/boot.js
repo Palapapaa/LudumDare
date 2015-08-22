@@ -4,8 +4,8 @@ var bootState = {
         console.log("Boot state preload");
 
         // Mise en place de la progress bar
-        game.load.image('progress_bar_bg' , 'assets/progress_bar_bg.png');
-        game.load.image('progress_bar' , 'assets/progress_bar.png');
+        game.load.image('progress_bar_bg' , 'assets/graphics/progress_bar_bg.png');
+        game.load.image('progress_bar' , 'assets/graphics/progress_bar.png');
     },
     
     create : function(){
