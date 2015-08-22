@@ -202,6 +202,11 @@ var gameState = {
         ennemy.damage = ennemyData['damage'];
         ennemy.score = ennemyData['score'];
         ennemy.loadTexture("enemy_"+type);
+
+       ennemy.animations.add('move', [0,1], 12, true);
+       ennemy.animations.play('move');
+
+
           var spawnY;
           switch(type){
               case "armored":

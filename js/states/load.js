@@ -29,8 +29,10 @@ var loadState = {
 
         //load enemies
         var keys = Object.keys(enemyData);
-        for(var i = 0,l = keys.length;i<l;i++){
-            game.load.image('enemy_'+keys[i] , 'assets/graphics/enemy_'+keys[i]+'.png');
+        for(var i = 0,l = enemyData.length;i<l;i++){
+            //game.load.image();
+            game.load.spritesheet('enemy_'+keys[i] , 'assets/graphics/enemy_'+keys[i]+'_move.png', 65, 100,2);
+
         }
         // Chargement des images;
         game.load.image('monster' , 'assets/graphics/monster.png');
@@ -39,7 +41,11 @@ var loadState = {
         game.load.image('lifebar' , 'assets/graphics/lifebar.png');
         game.load.image('lifebar_full' , 'assets/graphics/lifebar_full.png');
         game.load.image('background' , 'assets/graphics/background_game.png');
-        game.load.image('enemy_base' , 'assets/graphics/enemy_base.png');
+      //  game.load.image('enemy_base' , 'assets/graphics/enemy_base.png');
+
+      game.load.spritesheet('enemy_base', 'assets/graphics/enemy_base_move.png', 65, 100,2);
+
+
         game.load.image('sprite_rock' , 'assets/graphics/sprite_rock.png');
 
 
