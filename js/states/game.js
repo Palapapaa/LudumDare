@@ -64,9 +64,9 @@ var gameState = {
 
         this.defaultCard.template = this.game.add.sprite(100, 495, 'card_template');
         this.defaultCard.icon = this.game.add.sprite(100 + 32, 532, 'icon_'+this.defaultCard.thing.id);
-        this.defaultCard.icon.anchor.setTo(0.5, 0.5);        
+        this.defaultCard.icon.anchor.setTo(0.5, 0.5);
         this.defaultCard.trajectory = this.game.add.sprite(148, 585, 'trajectory_'+this.defaultCard.thing.trajectory);
-        this.defaultCard.trajectory.anchor.setTo(0.5, 0.5);        
+        this.defaultCard.trajectory.anchor.setTo(0.5, 0.5);
         this.defaultCard.damage = this.game.add.text(116, 587, this.defaultCard.thing.damage,{"fontSize": 18});
         this.defaultCard.damage.anchor.setTo(0.5, 0.5);
         this.defaultCard.cooldownSprite = this.game.add.sprite(100, 595, 'card_cooldown');
@@ -91,7 +91,8 @@ var gameState = {
         this.monster.outOfBoundsKill = true;
         this.monster.life = 100;
         this.monster.enableBody = true;
-
+        this.monster.animations.add('idle', [0,1], 3, true);
+        this.monster.animations.play('idle');
 
         //Ajout du container de lifebar
         this.addLifebar();
@@ -248,7 +249,7 @@ var gameState = {
           if(projectileData.trajectory==="lob"){
               projectile.speedY = projectileData.speed*1.5;
           }
-        
+
         projectile.projectileId = this.nextProjectileId;
         this.nextProjectileId++;
         projectile.checkWorldBounds = true;
@@ -367,9 +368,9 @@ var gameState = {
         card.trajectory.destroy(true);
         card.damage.destroy(true);
         card.overlay.destroy(true);
-        
+
     },
-    
+
     //redraw hand in case of delete
     redrawHand : function (){
         for(var l= this.hand.length,i=l-1;i>=0;i--){
@@ -405,7 +406,7 @@ var gameState = {
         cardObj.icon = this.game.add.sprite(200+handIndex * 70 + 32, 532, 'icon_'+cardObj.thing.id);
         cardObj.icon.anchor.setTo(0.5, 0.5);
         cardObj.trajectory = this.game.add.sprite(248+handIndex * 70, 585, 'trajectory_'+cardObj.thing.trajectory);
-        cardObj.trajectory.anchor.setTo(0.5, 0.5);        
+        cardObj.trajectory.anchor.setTo(0.5, 0.5);
         cardObj.damage = this.game.add.text(216+handIndex * 70, 587, cardObj.thing.damage,{"fontSize": 18});
         cardObj.damage.anchor.setTo(0.5, 0.5);
         cardObj.overlay = this.game.add.sprite(200+handIndex * 70, 495, 'card_overlay');
