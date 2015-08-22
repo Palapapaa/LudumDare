@@ -318,8 +318,10 @@ var gameState = {
 
     ennemyAttackMonster : function(damage){
       this.monster.life -= damage;
-      if(this.monster.life < 0)
+      if(this.monster.life < 0){
         this.monster.kill();
+        game.state.start('gameover');
+      }
       this.lifebarFull.scale.setTo(this.monster.life / 100, 1);
       console.log(damage)
     }
