@@ -104,15 +104,18 @@ var gameState = {
       var nbEnnemies = this.ennemies.children.length;
       if(nbEnnemies > 0){
           for(var i = 0, l = nbEnnemies; i < l; ++i){
-            if(this.ennemies.children[i].x > 575){
-              this.ennemies.children[i].body.velocity.x = 0;
-              if(this.ennemies.children[i].attackCooldown > 0)
-                this.ennemies.children[i].attackCooldown--;
-              else{
-                this.ennemyAttackMonster(this.ennemies.children[i].damage);
-                this.ennemies.children[i].attackCooldown = 60;
-              }
-            }
+              if(this.ennemies.children[i].alive){
+                  if(this.ennemies.children[i].x > 575){
+                  this.ennemies.children[i].body.velocity.x = 0;
+                  if(this.ennemies.children[i].attackCooldown > 0)
+                    this.ennemies.children[i].attackCooldown--;
+                  else{
+                    this.ennemyAttackMonster(this.ennemies.children[i].damage);
+                    this.ennemies.children[i].attackCooldown = 60;
+                  }
+                }
+                  
+              }            
           }
           game.physics.arcade.overlap(this.projectiles, this.ennemies, this.damageEnnemy, null, this);
       }
