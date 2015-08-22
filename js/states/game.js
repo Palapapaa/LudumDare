@@ -21,6 +21,8 @@ var gameState = {
     },
 
     create : function(){
+
+
         game.physics.startSystem(Phaser.Physics.ARCADE);
         //Ajout du background
         game.add.sprite(0,0,"background");
@@ -30,13 +32,25 @@ var gameState = {
         this.hand = [];
         this.handSprites = [];
 
+        //score display
+        this.score = 0;
+        this.scoreDisplay = game.add.text(20,20,"Score : 00000000",{});
+
+
+        this.availableEnemies = ["base"];
+        this.totalEnemySpawnChance = enemyData.base.spawnchance;
+        this.enemiesKilled = 0;
 
          //Sons
-        this.thingsSounds = {};
+        this.gameSounds = {};
         var keys = Object.keys(thingsData);
         for(var i = 0,l = keys.length;i<l;i++){
-            this.thingsSounds[keys[i]] = game.add.audio("sound_"+keys[i]);
+            this.gameSounds[keys[i]] = game.add.audio("sound_"+keys[i]);
         }
+
+        this.gameSounds.enemy_hit = game.add.audio("enemy_hit");
+        this.gameSounds.player_hit = game.add.audio("player_hit");
+        this.gameSounds.enemy_destroyed = game.add.audio("enemy_destroyed");
 
         this.drawCooldown=5000;
         this.autoDraw = game.time.events.loop(this.drawCooldown, this.drawCards, this);
@@ -94,7 +108,7 @@ var gameState = {
         game.physics.arcade.collide(this.ennemies, this.projectiles);
 
         //TODO Parametrer dans le niveau l'interval d'apparition des ennelus
-        this.loopEnnemies = game.time.events.loop(2000, this.addEnnemy, this);
+        this.loopEnnemies = game.time.events.loop(2250, this.addEnnemy, this);
 
 
     },
@@ -168,20 +182,33 @@ var gameState = {
     addEnnemy: function(){
       var ennemy = this.ennemies.getFirstDead();
 
-      var ennemyData = enemyData["base"];
+      var type = this.getAvailableEnemyType(this.randomGenerator.integerInRange(0,this.totalEnemySpawnChance));
+
+      var ennemyData = enemyData[type];
 
 
       if(ennemy && typeof ennemyData !== "undefined"){
         //Donnée en dur à modifier TODO
-        ennemy.life = 1;
+        ennemy.life = ennemyData['health'];
         //Projectiles qui ont fait du damage sur l'ennemi
         ennemy.damageBy = [];
         ennemy.checkWorldBounds = true;
         ennemy.outOfBoundsKill = true;
         ennemy.attackCooldown = ennemyData['cooldown'] * 60;
         ennemy.damage = ennemyData['damage'];
+        ennemy.score = ennemyData['score'];
+        ennemy.loadTexture("enemy_"+type);
+          var spawnY;
+          switch(type){
+              case "armored":
+              case "base": spawnY=this.randomGenerator.integerInRange(300,350); break;
+
+          }
+
+
+        ennemy.reset(0 , spawnY);
+
         ennemy.range = ennemyData['range'];
-        ennemy.reset(0 , this.randomGenerator.integerInRange(150,400));
         ennemy.body.velocity.x = ennemyData['speed'] * 60;
       }
     },
@@ -194,7 +221,7 @@ var gameState = {
 
       if(projectile && typeof projectileData !== "undefined"){
 
-        this.thingsSounds[type].play();
+        this.gameSounds[type].play();
         projectile.angle=0;
         projectile.damage = projectileData.damage;
         projectile.properties = projectileData.properties;
@@ -222,22 +249,76 @@ var gameState = {
           projectile.kill();
         }
         if(ennemy.life <= 0){
-          ennemy.kill();
+            this.score+=ennemy.score;
+            ennemy.kill();
+            this.gameSounds.enemy_destroyed.play();
+            this.updateScore();
+            this.enemiesKilled++;
+            this.updateAvailableEnemies();
+
+        }else{
+            this.gameSounds.enemy_hit.play();
         }
-        console.log(ennemy.life);
+        //console.log(ennemy.life);
 
       }
 
+    },
+    updateScore : function(){
+        var scoreString= ""+this.score;
+
+        while(scoreString.length<8){
+            scoreString="0"+scoreString;
+        }
+        this.scoreDisplay.text="Score : "+scoreString;
+
+    },
+    updateAvailableEnemies : function(){
+
+        var keys = Object.keys(enemyData);
+        for(var i = 0,l = keys.length;i<l;i++){
+            if(this.availableEnemies.indexOf(enemyData[keys[i]].id)<0&&enemyData[keys[i]].spawnthreshold<=this.enemiesKilled){
+
+                console.log("added "+enemyData[keys[i]].id);
+                this.availableEnemies.push(enemyData[keys[i]].id);
+                this.totalEnemySpawnChance+=enemyData[keys[i]].spawnchance;
+
+           }
+        }
+    },
+
+    getAvailableEnemyType : function(roll){
+        var current = 0;
+        var type = "base";
+        //console.log(type);
+        for(var i =0,l = this.availableEnemies.length;i<l;i++){
+            if(roll>=current && roll<current+enemyData[this.availableEnemies[i]].spawnchance){
+                type=this.availableEnemies[i];break;
+            }
+            current+=enemyData[this.availableEnemies[i]].spawnchance;
+        }
+        return type;
     },
 
     initDeck : function(){
         this.deck=[];
 
-        for(var i=0; i<15;i++){
+        for(var i=0; i<3;i++){
             this.deck.push(thingsData.caddie);
         }
+        for(var i=0; i<12;i++){
+            this.deck.push(thingsData.rock);
+        }
+
+        this.deck = this.shuffleArray(this.deck);
+
         this.resetHand();
         this.drawCards(5);
+    },
+
+    shuffleArray : function(o){
+        for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+        return o;
     },
 
     resetHand : function(){
@@ -317,14 +398,14 @@ var gameState = {
     },
 
     ennemyAttackMonster : function(damage){
-      this.monster.life -= damage;
-      if(this.monster.life < 0){
-        this.monster.kill();
-        game.state.start('gameover');
-      }
-      this.lifebarFull.scale.setTo(this.monster.life / 100, 1);
-      console.log(damage)
+
+        this.gameSounds.player_hit.play();
+          this.monster.life -= damage;
+          if(this.monster.life < 0){
+            this.monster.kill();
+            game.state.start('gameover');
+          }
+          this.lifebarFull.scale.setTo(this.monster.life / 100, 1);
+          //console.log(damage);
     }
-
-
 };
