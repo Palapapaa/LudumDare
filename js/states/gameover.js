@@ -7,7 +7,6 @@ var gameoverState = {
     preload : function(){
         console.log("Gameover state preload");
 
-        this.spacebar = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         this.menuSwitchCooldown=30;//temps avant de valider la sélection
     },
 
@@ -24,7 +23,7 @@ var gameoverState = {
         var score = game.add.text(game.world.centerX, 300, 'Score : ' + this.score,
         { font: 'bold 64px Arial', fill: '#ffffff' });
         score.anchor.setTo(0.5, 0.5);
-        var screenTitle = game.add.text(game.world.centerX, 480, 'Appuyez sur la touche espace pour continuer...',
+        var screenTitle = game.add.text(game.world.centerX, 480, 'Cliquez ! Cliquez banque de salope, recommencez à jouer !',
         { font: 'bold 32px Arial', fill: '#ffffff' });
         screenTitle.anchor.setTo(0.5, 0.5);
 
@@ -40,7 +39,7 @@ var gameoverState = {
 
 
         // On quitte le menu
-        if(this.spacebar.isDown){
+        if(game.input.activePointer.isDown){
             this.select();
         }
 
