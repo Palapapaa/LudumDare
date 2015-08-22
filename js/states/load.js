@@ -29,7 +29,7 @@ var loadState = {
 
         //load enemies
         var keys = Object.keys(enemyData);
-        for(var i = 0,l = enemyData.length;i<l;i++){
+        for(var i = 0,l = keys.length;i<l;i++){
             game.load.image('enemy_'+keys[i] , 'assets/graphics/enemy_'+keys[i]+'.png');
         }
         // Chargement des images;

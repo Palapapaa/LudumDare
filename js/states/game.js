@@ -31,13 +31,15 @@ var gameState = {
         // cards currently visible on the GUI the player can use
         this.hand = [];
         this.handSprites = [];
-<<<<<<< HEAD
         
-        //score display
-        
+        //score display        
         this.score = 0;
         this.scoreDisplay = game.add.text(20,20,"Score : 00000000",{});
         
+        
+        this.availableEnemies = ["base"];
+        this.totalEnemySpawnChance = enemyData.base.spawnchance;
+        this.enemiesKilled = 0;
         
          //Sons
         this.gameSounds = {};        
@@ -180,7 +182,9 @@ var gameState = {
     addEnnemy: function(){
       var ennemy = this.ennemies.getFirstDead();
 
-      var ennemyData = enemyData["base"];
+      var type = this.getAvailableEnemyType(this.randomGenerator.integerInRange(0,this.totalEnemySpawnChance));
+        
+      var ennemyData = enemyData[type];
 
 
       if(ennemy && typeof ennemyData !== "undefined"){
@@ -193,7 +197,16 @@ var gameState = {
         ennemy.attackCooldown = ennemyData['cooldown'] * 60;
         ennemy.damage = ennemyData['damage'];
         ennemy.score = ennemyData['score'];
-        ennemy.reset(0 , this.randomGenerator.integerInRange(150,400));
+        ennemy.loadTexture("enemy_"+type);
+          var spawnY;
+          switch(type){
+              case "armored":       
+              case "base": spawnY=this.randomGenerator.integerInRange(300,350); break;
+                  
+          }
+          
+          
+        ennemy.reset(0 , spawnY);
         ennemy.body.velocity.x = ennemyData['speed'] * 60;
       }
     },
@@ -238,11 +251,13 @@ var gameState = {
             ennemy.kill();
             this.gameSounds.enemy_destroyed.play();
             this.updateScore();
+            this.enemiesKilled++;
+            this.updateAvailableEnemies();
             
         }else{
             this.gameSounds.enemy_hit.play();
         }
-        console.log(ennemy.life);
+        //console.log(ennemy.life);
 
       }
 
@@ -255,6 +270,32 @@ var gameState = {
         }
         this.scoreDisplay.text="Score : "+scoreString;
         
+    },
+    updateAvailableEnemies : function(){
+        
+        var keys = Object.keys(enemyData);
+        for(var i = 0,l = keys.length;i<l;i++){
+            if(this.availableEnemies.indexOf(enemyData[keys[i]].id)<0&&enemyData[keys[i]].spawnthreshold<=this.enemiesKilled){
+                
+                console.log("added "+enemyData[keys[i]].id);
+                this.availableEnemies.push(enemyData[keys[i]].id);
+                this.totalEnemySpawnChance+=enemyData[keys[i]].spawnchance;
+                
+           }
+        }
+    },
+    
+    getAvailableEnemyType : function(roll){
+        var current = 0;
+        var type = "base";
+        //console.log(type);
+        for(var i =0,l = this.availableEnemies.length;i<l;i++){
+            if(roll>=current && roll<current+enemyData[this.availableEnemies[i]].spawnchance){
+                type=this.availableEnemies[i];break;
+            }
+            current+=enemyData[this.availableEnemies[i]].spawnchance;
+        }
+        return type;
     },
     
     initDeck : function(){
@@ -344,11 +385,12 @@ var gameState = {
     },
 
     ennemyAttackMonster : function(damage){
-      this.monster.life -= damage;
-      if(this.monster.life < 0)
-        this.monster.kill();
-      this.lifebarFull.scale.setTo(this.monster.life / 100, 1);
-      console.log(damage)
+        this.gameSounds.player_hit.play();
+          this.monster.life -= damage;
+          if(this.monster.life < 0)
+            this.monster.kill();
+          this.lifebarFull.scale.setTo(this.monster.life / 100, 1);
+          //console.log(damage);
     }
 
 
