@@ -37,7 +37,7 @@ var gameState = {
 
 
         //Ajout du monstre
-        this.addMonster(600,200);
+        this.addMonster(650,200);
 
         //Ajout du container de lifebar
         this.addLifebar();
@@ -59,22 +59,31 @@ var gameState = {
         //TODO Parametrer dans le niveau l'interval d'apparition des ennelus
         this.loopEnnemies = game.time.events.loop(1000, this.addEnnemy, this);
 
-        this.addProjectile(100,300);
+        this.addProjectile(500,300, 'rock');
 
     },
 
     update : function(){
-
       //mise à jour des ennemis
       var nbEnnemies = this.ennemies.children.length;
       if(nbEnnemies > 0){
           for(var i = 0, l = nbEnnemies; i < l; ++i){
-            if(this.ennemies.children[i].x < 500)
+            if(this.ennemies.children[i].x < 575)
               this.ennemies.children[i].x += this.levelSpeed;
           }
           game.physics.arcade.overlap(this.projectiles, this.ennemies, this.damageEnnemy, null, this);
       }
+      var nbProjectiles = this.projectiles.children.length;
+      if(nbProjectiles  > 0){
+        for(var i = 0, l = nbProjectiles; i < l; ++i){
 
+          this.projectiles.children[i].x -= this.projectiles.children[i].speedX;
+        //  this.projectiles.children[i].speedX -= 0.01;
+          this.projectiles.children[i].y -= this.projectiles.children[i].speedY;
+          this.projectiles.children[i].speedY -= 0.005;
+        }
+
+      }
     },
 
     addMonster : function(x,y){
@@ -108,15 +117,19 @@ var gameState = {
       }
     },
 
-    addProjectile: function(x, y){
+    addProjectile: function(x, y, type){
       var projectile = this.projectiles.getFirstDead();
 
-      if(projectile){
+      var projectileData = thingsData[type];
+
+
+      if(projectile && typeof projectileData !== "undefined"){
         //Donnée en dur à modifier TODO
-        projectile.damage = 1;
-        projectile.properties = ['percing'];
+        projectile.damage = projectileData.damage;
+        projectile.properties = projectileData.properties;
 
-
+        projectile.speedX = projectileData.speed;
+        projectile.speedY = projectileData.speed;
         projectile.projectileId = this.nextProjectileId;
         this.nextProjectileId++;
         projectile.checkWorldBounds = true;
