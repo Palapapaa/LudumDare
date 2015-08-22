@@ -37,7 +37,7 @@ var gameState = {
 
 
         //Ajout du monstre
-        this.addMonster(700,300);
+        this.addMonster(600,200);
 
         //Ajout du container de lifebar
         this.addLifebar();
@@ -69,7 +69,7 @@ var gameState = {
       var nbEnnemies = this.ennemies.children.length;
       if(nbEnnemies > 0){
           for(var i = 0, l = nbEnnemies; i < l; ++i){
-            if(this.ennemies.children[i].x < 600)
+            if(this.ennemies.children[i].x < 500)
               this.ennemies.children[i].x += this.levelSpeed;
           }
           game.physics.arcade.overlap(this.projectiles, this.ennemies, this.damageEnnemy, null, this);
@@ -82,10 +82,6 @@ var gameState = {
         var monster = this.monsters.getFirstDead();
 
         if(monster){
-            monster.anchor.setTo(0.5,0.5);
-            monster.direction=this.RIGHT;
-            monster.scale.x=0.5;
-            monster.scale.y=0.5;
             monster.checkWorldBounds = true;
             monster.outOfBoundsKill = true;
             monster.reset(x , y);
@@ -102,13 +98,9 @@ var gameState = {
 
       if(ennemy){
         //Donnée en dur à modifier TODO
-        ennemy.life = 42;
+        ennemy.life = 1;
         //Projectiles qui ont fait du damage sur l'ennemi
         ennemy.damageBy = [];
-        ennemy.anchor.setTo(0.5,0.5);
-        ennemy.direction=this.RIGHT;
-        ennemy.scale.x=0.5;
-        ennemy.scale.y=0.5;
         ennemy.checkWorldBounds = true;
         ennemy.outOfBoundsKill = true;
 
@@ -127,10 +119,6 @@ var gameState = {
 
         projectile.projectileId = this.nextProjectileId;
         this.nextProjectileId++;
-        projectile.anchor.setTo(0.5,0.5);
-        projectile.direction=this.RIGHT;
-        projectile.scale.x=0.5;
-        projectile.scale.y=0.5;
         projectile.checkWorldBounds = true;
         projectile.outOfBoundsKill = true;
 
