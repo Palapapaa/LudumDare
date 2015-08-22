@@ -112,6 +112,14 @@ var gameState = {
 
         //TODO Parametrer dans le niveau l'interval d'apparition des ennelus
         this.loopEnnemies = game.time.events.loop(2250, this.addEnnemy, this);
+        
+        //Particules feu
+        this.emitterFire = game.add.emitter(0, 0 , 35);
+        this.emitterFire.setXSpeed(-250, 250);
+        this.emitterFire.setYSpeed(-250, 250);
+        this.emitterFire.gravity = 0;
+        this.emitterFire.makeParticles('particle_fire');
+        
 
 
     },
