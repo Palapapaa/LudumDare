@@ -268,7 +268,7 @@ var gameState = {
         }else{
             this.gameSounds.enemy_hit.play();
             if(projectile.properties.indexOf('knockback') > -1){
-              
+
                 game.add.tween(ennemy).to({"x" : ennemy.x-75}).easing(Phaser.Easing.Exponential.Out).start();
             }
         }
@@ -420,7 +420,7 @@ var gameState = {
           this.monster.life -= damage;
           if(this.monster.life < 0){
             this.monster.kill();
-            game.state.start('gameover');
+            game.state.start('gameover', true, false, this.score);
           }
           this.lifebarFull.scale.setTo(this.monster.life / 100, 1);
           //console.log(damage);

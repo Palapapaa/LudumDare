@@ -1,5 +1,9 @@
 var gameoverState = {
 
+    init: function(score){
+      this.score = score;
+    },
+
     preload : function(){
         console.log("Gameover state preload");
 
@@ -17,7 +21,10 @@ var gameoverState = {
         var goTitle = game.add.text(game.world.centerX, 120, 'GAME OVER',
         { font: 'bold 64px Arial', fill: '#ffffff' });
         goTitle.anchor.setTo(0.5, 0.5);
-        var screenTitle = game.add.text(game.world.centerX, 300, 'Appuyez sur la touche valider pour continuer...',
+        var score = game.add.text(game.world.centerX, 300, 'Score : ' + this.score,
+        { font: 'bold 64px Arial', fill: '#ffffff' });
+        score.anchor.setTo(0.5, 0.5);
+        var screenTitle = game.add.text(game.world.centerX, 480, 'Appuyez sur la touche valider pour continuer...',
         { font: 'bold 32px Arial', fill: '#ffffff' });
         screenTitle.anchor.setTo(0.5, 0.5);
 
