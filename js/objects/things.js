@@ -17,7 +17,7 @@ var thingsData = {
         "cost" : 0,
         "speed" : 4,
         "properties" : ["piercing",],
-        "offset" : {"x" : -10, "y" : 200},
+        "offset" : {"x" : -10, "y" : 220},
 
     },
 };

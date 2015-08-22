@@ -108,7 +108,7 @@ var gameState = {
         game.physics.arcade.collide(this.ennemies, this.projectiles);
 
         //TODO Parametrer dans le niveau l'interval d'apparition des ennelus
-        this.loopEnnemies = game.time.events.loop(2000, this.addEnnemy, this);
+        this.loopEnnemies = game.time.events.loop(2250, this.addEnnemy, this);
 
 
     },
@@ -303,11 +303,22 @@ var gameState = {
     initDeck : function(){
         this.deck=[];
 
-        for(var i=0; i<15;i++){
+        for(var i=0; i<3;i++){
             this.deck.push(thingsData.caddie);
         }
+        for(var i=0; i<12;i++){
+            this.deck.push(thingsData.rock);
+        }
+        
+        this.deck = this.shuffleArray(this.deck);
+        
         this.resetHand();
         this.drawCards(5);
+    },
+    
+    shuffleArray : function(o){
+        for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+        return o;
     },
 
     resetHand : function(){
