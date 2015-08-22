@@ -64,18 +64,19 @@ var gameState = {
 
         this.defaultCard.template = this.game.add.sprite(100, 495, 'card_template');
         this.defaultCard.icon = this.game.add.sprite(100 + 32, 532, 'icon_'+this.defaultCard.thing.id);
-        this.defaultCard.icon.anchor.setTo(0.5, 0.5);
-        this.defaultCard.overlay = this.game.add.sprite(100, 575, 'card_overlay');
-        this.defaultCard.overlay.scale.setTo(1,0);
-        this.defaultCard.overlay.alpha=0.8;
-        this.defaultCard.template.inputEnabled=true;
-        this.defaultCard.icon.inputEnabled=true;
-        this.defaultCard.template.thing=this.defaultCard.thing;
-        this.defaultCard.icon.thing=this.defaultCard.thing;
-        this.defaultCard.template.defaultCard=true;
-        this.defaultCard.icon.defaultCard=true;
-        this.defaultCard.template.events.onInputDown.add(this.cardOnClick,this);
-        this.defaultCard.icon.events.onInputDown.add(this.cardOnClick,this);
+        this.defaultCard.icon.anchor.setTo(0.5, 0.5);        
+        this.defaultCard.trajectory = this.game.add.sprite(148, 585, 'trajectory_'+this.defaultCard.thing.trajectory);
+        this.defaultCard.trajectory.anchor.setTo(0.5, 0.5);        
+        this.defaultCard.damage = this.game.add.text(116, 587, this.defaultCard.thing.damage,{"fontSize": 18});
+        this.defaultCard.damage.anchor.setTo(0.5, 0.5);
+        this.defaultCard.cooldownSprite = this.game.add.sprite(100, 595, 'card_cooldown');
+        this.defaultCard.cooldownSprite.scale.setTo(1,0);
+        this.defaultCard.cooldownSprite.alpha=0.8;
+        this.defaultCard.overlay = this.game.add.sprite(100, 495, 'card_overlay');
+        this.defaultCard.overlay.inputEnabled=true;
+        this.defaultCard.overlay.thing=this.defaultCard.thing;
+        this.defaultCard.overlay.defaultCard=true;
+        this.defaultCard.overlay.events.onInputDown.add(this.cardOnClick,this);
 
 
         this.randomGenerator = new Phaser.RandomDataGenerator(1337);
@@ -169,7 +170,7 @@ var gameState = {
 
         if(this.defaultCard.timer>=0){
             this.defaultCard.timer--;
-            this.defaultCard.overlay.scale.setTo(1,-this.defaultCard.timer/this.defaultCard.cooldown);
+            this.defaultCard.cooldownSprite.scale.setTo(1,-this.defaultCard.timer/this.defaultCard.cooldown);
         }
 
 
@@ -236,7 +237,10 @@ var gameState = {
         projectile.properties = projectileData.properties;
         projectile.trajectory=projectileData.trajectory;
         projectile.speedX = projectileData.speed;
-        projectile.speedY = projectileData.speed;
+          if(projectileData.trajectory==="lob"){
+              projectile.speedY = projectileData.speed*1.5;
+          }
+        
         projectile.projectileId = this.nextProjectileId;
         this.nextProjectileId++;
         projectile.checkWorldBounds = true;
@@ -316,11 +320,14 @@ var gameState = {
     initDeck : function(){
         this.deck=[];
 
-        for(var i=0; i<3;i++){
+        for(var i=0; i<2;i++){
             this.deck.push(thingsData.caddie);
         }
-        for(var i=0; i<12;i++){
+        for(var i=0; i<10;i++){
             this.deck.push(thingsData.rock);
+        }
+        for(var i=0; i<10;i++){
+            this.deck.push(thingsData.molotov);
         }
 
         this.deck = this.shuffleArray(this.deck);
@@ -341,19 +348,24 @@ var gameState = {
     },
 
     removeFromHand : function(index){
-        this.hand[index].icon.destroy(true);
-        this.hand[index].template.destroy(true);
-
+        this.destroyCard(this.hand[index]);
         this.hand.splice(index,1);
         this.redrawHand();
     },
 
-
+    destroyCard : function(card){
+        card.template.destroy(true);
+        card.icon.destroy(true);
+        card.trajectory.destroy(true);
+        card.damage.destroy(true);
+        card.overlay.destroy(true);
+        
+    },
+    
     //redraw hand in case of delete
     redrawHand : function (){
         for(var l= this.hand.length,i=l-1;i>=0;i--){
-            this.hand[i].icon.destroy(true);
-            this.hand[i].template.destroy(true);
+            this.destroyCard(this.hand[i]);
             this.addCardToHand(this.hand[i],i);
         }
     },
@@ -384,14 +396,15 @@ var gameState = {
         cardObj.template = this.game.add.sprite(200+handIndex * 70, 495, 'card_template');
         cardObj.icon = this.game.add.sprite(200+handIndex * 70 + 32, 532, 'icon_'+cardObj.thing.id);
         cardObj.icon.anchor.setTo(0.5, 0.5);
-        cardObj.template.inputEnabled=true;
-        cardObj.icon.inputEnabled=true;
-        cardObj.template.thing=cardObj.thing;
-        cardObj.icon.thing=cardObj.thing;
-        cardObj.template.handIndex=handIndex;
-        cardObj.icon.handIndex=handIndex;
-        cardObj.template.events.onInputDown.add(this.cardOnClick,this);
-        cardObj.icon.events.onInputDown.add(this.cardOnClick,this);
+        cardObj.trajectory = this.game.add.sprite(248+handIndex * 70, 585, 'trajectory_'+cardObj.thing.trajectory);
+        cardObj.trajectory.anchor.setTo(0.5, 0.5);        
+        cardObj.damage = this.game.add.text(216+handIndex * 70, 587, cardObj.thing.damage,{"fontSize": 18});
+        cardObj.damage.anchor.setTo(0.5, 0.5);
+        cardObj.overlay = this.game.add.sprite(200+handIndex * 70, 495, 'card_overlay');
+        cardObj.overlay.inputEnabled=true;
+        cardObj.overlay.thing=cardObj.thing;
+        cardObj.overlay.handIndex=handIndex;
+        cardObj.overlay.events.onInputDown.add(this.cardOnClick,this);
 
         return cardObj;
 
