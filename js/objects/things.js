@@ -20,4 +20,14 @@ var thingsData = {
         "offset" : {"x" : -10, "y" : 200},
 
     },
+    'molotov' : {
+        "id" : "molotov",
+        "damage" : 2,
+        "trajectory" : "lob",
+        "cost" : 0,
+        "speed" : 4,
+        "properties" : ["fire","rare","explosive"],
+        "offset" : {"x" : 0, "y" : 100},
+
+    },
 };

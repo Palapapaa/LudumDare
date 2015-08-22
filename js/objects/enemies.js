@@ -19,7 +19,7 @@ var enemyData = {
         "damage" : 2,
         "cooldown" : 1, //Temps en secondes
         "range" : 10,
-        "score" : 10,
+        "score" : 25,
         "spawnthreshold" : 10,
         "spawnchance" : 5,
     },
