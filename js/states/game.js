@@ -17,8 +17,7 @@ var gameState = {
         this.LEVELBOTTOM=game.global.gameHeight;
 
         this.levelSpeed = 1;
-        
-        
+        this.nextProjectileId = 1;
     },
 
     create : function(){
@@ -46,7 +45,7 @@ var gameState = {
 
 
         //Ajout du monstre
-        this.addMonster(700,300);
+        this.addMonster(600,200);
 
         //Ajout du container de lifebar
         this.addLifebar();
@@ -61,6 +60,7 @@ var gameState = {
 
 
         this.projectiles = game.add.group();
+        this.projectiles.enableBody = true;
         this.projectiles.createMultiple(25, "sprite_rock");
         game.physics.arcade.collide(this.ennemies, this.projectiles);
 
@@ -77,7 +77,7 @@ var gameState = {
       var nbEnnemies = this.ennemies.children.length;
       if(nbEnnemies > 0){
           for(var i = 0, l = nbEnnemies; i < l; ++i){
-            if(this.ennemies.children[i].x < 600)
+            if(this.ennemies.children[i].x < 500)
               this.ennemies.children[i].x += this.levelSpeed;
           }
           game.physics.arcade.overlap(this.projectiles, this.ennemies, this.damageEnnemy, null, this);
@@ -90,10 +90,6 @@ var gameState = {
         var monster = this.monsters.getFirstDead();
 
         if(monster){
-            monster.anchor.setTo(0.5,0.5);
-            monster.direction=this.RIGHT;
-            monster.scale.x=0.5;
-            monster.scale.y=0.5;
             monster.checkWorldBounds = true;
             monster.outOfBoundsKill = true;
             monster.reset(x , y);
@@ -109,10 +105,10 @@ var gameState = {
       var ennemy = this.ennemies.getFirstDead();
 
       if(ennemy){
-        ennemy.anchor.setTo(0.5,0.5);
-        ennemy.direction=this.RIGHT;
-        ennemy.scale.x=0.5;
-        ennemy.scale.y=0.5;
+        //Donnée en dur à modifier TODO
+        ennemy.life = 1;
+        //Projectiles qui ont fait du damage sur l'ennemi
+        ennemy.damageBy = [];
         ennemy.checkWorldBounds = true;
         ennemy.outOfBoundsKill = true;
 
@@ -124,10 +120,13 @@ var gameState = {
       var projectile = this.projectiles.getFirstDead();
 
       if(projectile){
-        projectile.anchor.setTo(0.5,0.5);
-        projectile.direction=this.RIGHT;
-        projectile.scale.x=0.5;
-        projectile.scale.y=0.5;
+        //Donnée en dur à modifier TODO
+        projectile.damage = 1;
+        projectile.properties = ['percing'];
+
+
+        projectile.projectileId = this.nextProjectileId;
+        this.nextProjectileId++;
         projectile.checkWorldBounds = true;
         projectile.outOfBoundsKill = true;
 
@@ -137,6 +136,24 @@ var gameState = {
 
     damageEnnemy: function() {
       console.log('olala je suis le damage');
+    }
+    damageEnnemy: function(projectile, ennemy) {
+      //Si l'ennemi ne s'est pas pris de dégat par ce projectile
+      if(ennemy.damageBy.indexOf(projectile.projectileId) === -1){
+        ennemy.damageBy.push(projectile.projectileId);
+
+        ennemy.life -= projectile.damage;
+        //Si le projectile n'est pas perforant
+        if(projectile.properties.indexOf('percing') === -1){
+          projectile.kill();
+        }
+        if(ennemy.life === 0){
+          ennemy.kill();
+        }
+        console.log(ennemy.life);
+
+      }
+
     },
     
     initDeck : function(){
@@ -161,7 +178,6 @@ var gameState = {
             }
             
         }
-    }
 
 
 
