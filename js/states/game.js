@@ -46,7 +46,7 @@ var gameState = {
         this.monster.checkWorldBounds = true;
         this.monster.outOfBoundsKill = true;
         this.monster.life = 100;
-        this.monster.reset(700, 220);
+        this.monster.reset(650, 220);
         this.monster.enableBody = true;
 
 
