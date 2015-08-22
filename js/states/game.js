@@ -31,6 +31,8 @@ var gameState = {
         this.handSprites = [];
         
         
+        this.drawCooldown=300;
+        this.drawTimer=0;
         
         this.initDeck();
 
@@ -95,6 +97,14 @@ var gameState = {
         }
 
       }
+        
+        
+        this.drawTimer++;
+        if(this.drawTimer>this.drawCooldown){
+            console.log("drawing card...");
+            this.drawTimer=0;
+            this.drawCards(1);
+        }
     },
 
     addMonster : function(x,y){
@@ -176,7 +186,7 @@ var gameState = {
             this.deck.push(thingsData.caddie);
         }
         this.resetHand();
-        this.drawCards(3);
+        this.drawCards(5);
         
     },
     
@@ -191,31 +201,54 @@ var gameState = {
         this.hand[index].template.destroy(true);
         
         this.hand.splice(index,1);
+        this.redrawHand();
+    },
+    
+    
+    //redraw hand in case of delete
+    redrawHand : function (){
+        for(var l= this.hand.length,i=l-1;i>=0;i--){
+            this.hand[i].icon.destroy(true);
+            this.hand[i].template.destroy(true); 
+            this.addCardToHand(this.hand[i],i);
+        }
     },
     
     drawCards : function(howMany){
         for(var i=0; i<howMany;i++){
-            var card = this.deck.shift();
-            if(typeof(card) !== "undefined"){
-                console.log(card);
-                var cardObj = {"thing":card};
-                var onclick = function(sprite, pointer){
-                    console.log("touché");
-                }
+            if(this.hand.length<5){       
                 
-                cardObj.template = this.game.add.sprite(300+this.hand.length * 70, 475, 'card_template');                
-                cardObj.icon = this.game.add.sprite(300+this.hand.length * 70 + 14, 500, 'icon_'+card.id);
-                cardObj.template.inputEnabled=true;
-                cardObj.icon.inputEnabled=true;
-                cardObj.template.events.onInputDown.add(onclick,this);
-                cardObj.icon.events.onInputDown.add(onclick,this);
-                
-                
-                
-                this.hand.push(cardObj);
+                var card = this.deck.shift();
+                if(typeof(card) !== "undefined"){
+                    var cardObj = {"thing":card};
+                    cardObj=this.addCardToHand(cardObj,this.hand.length);
+                    this.hand.push(cardObj);
+                }  
             }
             
+            
         }
+    },
+    
+    addCardToHand : function(cardObj,handIndex){
+        
+        cardObj.template = this.game.add.sprite(200+handIndex * 70, 475, 'card_template');                
+        cardObj.icon = this.game.add.sprite(200+handIndex * 70 + 14, 500, 'icon_'+cardObj.thing.id);
+        cardObj.template.inputEnabled=true;
+        cardObj.icon.inputEnabled=true;
+        cardObj.template.events.onInputDown.add(this.cardOnClick,this);
+        cardObj.icon.events.onInputDown.add(this.cardOnClick,this);
+        cardObj.template.thing=cardObj.thing;
+        cardObj.icon.thing=cardObj.thing;
+        cardObj.template.handIndex=handIndex;
+        cardObj.icon.handIndex=handIndex;
+        return cardObj;
+        
+    },
+    
+    cardOnClick : function(sprite, pointer){
+        console.log(sprite.thing);
+        this.removeFromHand(sprite.handIndex);
     }
 
 
