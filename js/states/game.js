@@ -98,7 +98,8 @@ var gameState = {
         ennemy.scale.y=0.5;
         ennemy.checkWorldBounds = true;
         ennemy.outOfBoundsKill = true;
-        ennemy.reset(0 , 300);
+
+        ennemy.reset(0 , this.randomGenerator.integerInRange(150,400));
       }
     }
 
