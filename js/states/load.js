@@ -17,7 +17,7 @@ var loadState = {
         game.load.setPreloadSprite(this.bar);
 
 
-        
+
         //load things
         for(var i = 0,l = thingsData.length;i<l;i++){
             game.load.image('sprite_'+thingsData[i].id , 'assets/graphics/sprite_'+thingsData[i].id+'.png');
@@ -25,7 +25,7 @@ var loadState = {
             game.load.image('trajectoire_'+thingsData[i].id , 'assets/graphics/trajectoire_'+thingsData[i].id+'.png');
             game.load.audio('sound_'+thingsData[i].id,['assets/audio/sound_'+thingsData[i].id+'.wav',]);
         }
-        
+
         //load enemies
         for(var i = 0,l = enemyData.length;i<l;i++){
             game.load.image('enemy_'+enemyData[i].id , 'assets/graphics/enemy_'+enemyData[i].id+'.png');

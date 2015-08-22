@@ -17,6 +17,7 @@ var gameState = {
         this.LEVELBOTTOM=game.global.gameHeight;
 
         this.levelSpeed = 1;
+        this.nextProjectileId = 1;
     },
 
     create : function(){
@@ -51,6 +52,7 @@ var gameState = {
 
 
         this.projectiles = game.add.group();
+        this.projectiles.enableBody = true;
         this.projectiles.createMultiple(25, "sprite_rock");
         game.physics.arcade.collide(this.ennemies, this.projectiles);
 
@@ -99,6 +101,10 @@ var gameState = {
       var ennemy = this.ennemies.getFirstDead();
 
       if(ennemy){
+        //Donnée en dur à modifier TODO
+        ennemy.life = 42;
+        //Projectiles qui ont fait du damage sur l'ennemi
+        ennemy.damageBy = [];
         ennemy.anchor.setTo(0.5,0.5);
         ennemy.direction=this.RIGHT;
         ennemy.scale.x=0.5;
@@ -114,6 +120,13 @@ var gameState = {
       var projectile = this.projectiles.getFirstDead();
 
       if(projectile){
+        //Donnée en dur à modifier TODO
+        projectile.damage = 1;
+        projectile.properties = ['percing'];
+
+
+        projectile.projectileId = this.nextProjectileId;
+        this.nextProjectileId++;
         projectile.anchor.setTo(0.5,0.5);
         projectile.direction=this.RIGHT;
         projectile.scale.x=0.5;
@@ -125,8 +138,23 @@ var gameState = {
       }
     },
 
-    damageEnnemy: function() {
-      console.log('olala je suis le damage');
+    damageEnnemy: function(projectile, ennemy) {
+      //Si l'ennemi ne s'est pas pris de dégat par ce projectile
+      if(ennemy.damageBy.indexOf(projectile.projectileId) === -1){
+        ennemy.damageBy.push(projectile.projectileId);
+
+        ennemy.life -= projectile.damage;
+        //Si le projectile n'est pas perforant
+        if(projectile.properties.indexOf('percing') === -1){
+          projectile.kill();
+        }
+        if(ennemy.life === 0){
+          ennemy.kill();
+        }
+        console.log(ennemy.life);
+
+      }
+
     }
 
 
