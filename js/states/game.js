@@ -21,7 +21,7 @@ var gameState = {
     },
 
     create : function(){
-        
+        game.physics.startSystem(Phaser.Physics.ARCADE);
         //Ajout du background
         game.add.sprite(0,0,"background");
         //cards not yet drawn by the player
@@ -64,19 +64,18 @@ var gameState = {
         this.randomGenerator = new Phaser.RandomDataGenerator(1337);
         
 
-        // Groupe monstre
-        this.monsters = game.add.group();
-        this.monsters.enableBody = true;
-
-        this.monsters.createMultiple(25, "monster");
-
         console.log("game state create() finished");
 
 
         //Ajout du monstre
-        this.addMonster(650,200);
+        this.monster = game.add.sprite(700, 220, 'monster');
+        this.monster.checkWorldBounds = true;
+        this.monster.outOfBoundsKill = true;
+        this.monster.life = 100;
+        this.monster.reset(700, 220);
+        this.monster.enableBody = true;
 
-        
+
         //Ajout du container de lifebar
         this.addLifebar();
 
@@ -86,8 +85,8 @@ var gameState = {
 
         this.ennemies.createMultiple(25, "enemy_base");
         //Colisions, a voir plus tard
-        //game.physics.arcade.collide(this.player, this.ennemies);
-
+        game.physics.arcade.collide(this.ennemies);
+        game.physics.enable(this.ennemies, Phaser.Physics.ARCADE);
 
         this.projectiles = game.add.group();
         this.projectiles.enableBody = true;
@@ -95,7 +94,7 @@ var gameState = {
         game.physics.arcade.collide(this.ennemies, this.projectiles);
 
         //TODO Parametrer dans le niveau l'interval d'apparition des ennelus
-        this.loopEnnemies = game.time.events.loop(1000, this.addEnnemy, this);
+        this.loopEnnemies = game.time.events.loop(2000, this.addEnnemy, this);
 
 
     },
@@ -105,8 +104,15 @@ var gameState = {
       var nbEnnemies = this.ennemies.children.length;
       if(nbEnnemies > 0){
           for(var i = 0, l = nbEnnemies; i < l; ++i){
-            if(this.ennemies.children[i].x < 575)
-              this.ennemies.children[i].x += this.levelSpeed;
+            if(this.ennemies.children[i].x > 575){
+              this.ennemies.children[i].body.velocity.x = 0;
+              if(this.ennemies.children[i].attackCooldown > 0)
+                this.ennemies.children[i].attackCooldown--;
+              else{
+                this.ennemyAttackMonster(this.ennemies.children[i].damage);
+                this.ennemies.children[i].attackCooldown = 60;
+              }
+            }
           }
           game.physics.arcade.overlap(this.projectiles, this.ennemies, this.damageEnnemy, null, this);
       }
@@ -151,17 +157,6 @@ var gameState = {
         
     },
 
-    addMonster : function(x,y){
-
-        var monster = this.monsters.getFirstDead();
-
-        if(monster){
-            monster.checkWorldBounds = true;
-            monster.outOfBoundsKill = true;
-            monster.reset(x , y);
-        }
-    },
-
     addLifebar: function(){
       game.add.sprite(300,10,"lifebar");
 
@@ -170,15 +165,20 @@ var gameState = {
     addEnnemy: function(){
       var ennemy = this.ennemies.getFirstDead();
 
-      if(ennemy){
+      var ennemyData = enemyData["base"];
+
+
+      if(ennemy && typeof ennemyData !== "undefined"){
         //Donnée en dur à modifier TODO
         ennemy.life = 1;
         //Projectiles qui ont fait du damage sur l'ennemi
         ennemy.damageBy = [];
         ennemy.checkWorldBounds = true;
         ennemy.outOfBoundsKill = true;
-
+        ennemy.attackCooldown = ennemyData['cooldown'] * 60;
+        ennemy.damage = ennemyData['damage'];
         ennemy.reset(0 , this.randomGenerator.integerInRange(150,400));
+        ennemy.body.velocity.x = ennemyData['speed'] * 60;
       }
     },
 
@@ -225,65 +225,62 @@ var gameState = {
       }
 
     },
-    
+
     initDeck : function(){
         this.deck=[];
-        
+
         for(var i=0; i<15;i++){
             this.deck.push(thingsData.caddie);
         }
         this.resetHand();
         this.drawCards(5);
-        
     },
-    
+
     resetHand : function(){
         for(var l= this.hand.length,i=l-1;i>=0;i--){
-            this.removeFromHand(i);  
+            this.removeFromHand(i);
         }
     },
-    
+
     removeFromHand : function(index){
         this.hand[index].icon.destroy(true);
         this.hand[index].template.destroy(true);
-        
+
         this.hand.splice(index,1);
         this.redrawHand();
     },
-    
-    
+
+
     //redraw hand in case of delete
     redrawHand : function (){
         for(var l= this.hand.length,i=l-1;i>=0;i--){
             this.hand[i].icon.destroy(true);
-            this.hand[i].template.destroy(true); 
+            this.hand[i].template.destroy(true);
             this.addCardToHand(this.hand[i],i);
         }
     },
-    
+
     drawCards : function(howMany){
         
         if(!howMany)howMany=1;
         console.log("trying to draw "+howMany+" card(s)...");
         for(var i=0; i<howMany;i++){
-            if(this.hand.length<5){       
-                
+            if(this.hand.length<5){
+
                 var card = this.deck.shift();
                 if(typeof(card) !== "undefined"){
                     console.log("drawing card...");
                     var cardObj = {"thing":card};
                     cardObj=this.addCardToHand(cardObj,this.hand.length);
                     this.hand.push(cardObj);
-                }  
+                }
             }
-            
-            
         }
     },
-    
+
     addCardToHand : function(cardObj,handIndex){
-        
-        cardObj.template = this.game.add.sprite(200+handIndex * 70, 475, 'card_template');                
+
+        cardObj.template = this.game.add.sprite(200+handIndex * 70, 475, 'card_template');
         cardObj.icon = this.game.add.sprite(200+handIndex * 70 + 14, 500, 'icon_'+cardObj.thing.id);
         cardObj.template.inputEnabled=true;
         cardObj.icon.inputEnabled=true;
@@ -295,9 +292,9 @@ var gameState = {
         cardObj.icon.events.onInputDown.add(this.cardOnClick,this);
         
         return cardObj;
-        
+
     },
-    
+
     cardOnClick : function(sprite, pointer){
         console.log(sprite.thing);
         var thing = sprite.thing;
@@ -313,6 +310,13 @@ var gameState = {
             this.addProjectile(650+thing.offset.x,200+thing.offset.y,thing.id);
             this.removeFromHand(sprite.handIndex);
         }
+    },
+
+    ennemyAttackMonster : function(damage){
+      this.monster.life -= damage;
+      if(this.monster.life < 0)
+        this.monster.kill();
+      console.log(damage)
     }
 
 
