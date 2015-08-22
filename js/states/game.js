@@ -15,11 +15,6 @@ var gameState = {
         this.LEVELTOP=250;
 
         this.LEVELBOTTOM=game.global.gameHeight;
-
-
-
-
-
     },
 
     create : function(){
@@ -34,7 +29,11 @@ var gameState = {
 
         console.log("game state create() finished");
 
-        this.addMonster(400,300);
+        //Ajout du monstre
+        this.addMonster(700,300);
+
+        //Ajout du container de lifebar
+        this.addLifebar();
 
     },
 
@@ -58,6 +57,11 @@ var gameState = {
             monster.reset(x , y);
         }
     },
+
+    addLifebar: function(){
+      game.add.sprite(300,10,"lifebar");
+
+    }
 
 
 
