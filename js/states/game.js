@@ -21,6 +21,8 @@ var gameState = {
     },
 
     create : function(){
+        
+        
         game.physics.startSystem(Phaser.Physics.ARCADE);
         //Ajout du background
         game.add.sprite(0,0,"background");
@@ -30,13 +32,22 @@ var gameState = {
         this.hand = [];
         this.handSprites = [];
         
+        //score display
+        
+        this.score = 0;
+        this.scoreDisplay = game.add.text(20,20,"Score : 00000000",{});
+        
         
          //Sons
-        this.thingsSounds = {};        
+        this.gameSounds = {};        
         var keys = Object.keys(thingsData);
         for(var i = 0,l = keys.length;i<l;i++){
-            this.thingsSounds[keys[i]] = game.add.audio("sound_"+keys[i]);
+            this.gameSounds[keys[i]] = game.add.audio("sound_"+keys[i]);
         }
+        
+        this.gameSounds.enemy_hit = game.add.audio("enemy_hit");
+        this.gameSounds.player_hit = game.add.audio("player_hit");
+        this.gameSounds.enemy_destroyed = game.add.audio("enemy_destroyed");
         
         this.drawCooldown=5000;
         this.autoDraw = game.time.events.loop(this.drawCooldown, this.drawCards, this);
@@ -173,13 +184,14 @@ var gameState = {
 
       if(ennemy && typeof ennemyData !== "undefined"){
         //Donnée en dur à modifier TODO
-        ennemy.life = 1;
+        ennemy.life = ennemyData['health'];
         //Projectiles qui ont fait du damage sur l'ennemi
         ennemy.damageBy = [];
         ennemy.checkWorldBounds = true;
         ennemy.outOfBoundsKill = true;
         ennemy.attackCooldown = ennemyData['cooldown'] * 60;
         ennemy.damage = ennemyData['damage'];
+        ennemy.score = ennemyData['score'];
         ennemy.reset(0 , this.randomGenerator.integerInRange(150,400));
         ennemy.body.velocity.x = ennemyData['speed'] * 60;
       }
@@ -193,7 +205,7 @@ var gameState = {
 
       if(projectile && typeof projectileData !== "undefined"){
           
-        this.thingsSounds[type].play();
+        this.gameSounds[type].play();
         projectile.angle=0;
         projectile.damage = projectileData.damage;
         projectile.properties = projectileData.properties;
@@ -221,14 +233,29 @@ var gameState = {
           projectile.kill();
         }
         if(ennemy.life <= 0){
-          ennemy.kill();
+            this.score+=ennemy.score;
+            ennemy.kill();
+            this.gameSounds.enemy_destroyed.play();
+            this.updateScore();
+            
+        }else{
+            this.gameSounds.enemy_hit.play();
         }
         console.log(ennemy.life);
 
       }
 
     },
-
+    updateScore : function(){
+        var scoreString= ""+this.score;
+        
+        while(scoreString.length<8){
+            scoreString="0"+scoreString;
+        }
+        this.scoreDisplay.text="Score : "+scoreString;
+        
+    },
+    
     initDeck : function(){
         this.deck=[];
 

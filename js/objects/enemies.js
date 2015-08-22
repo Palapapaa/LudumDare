@@ -6,7 +6,8 @@ var enemyData = {
         "pattern" : "walking",
         "damage" : 1,
         "cooldown" : 1, //Temps en secondes
-        "range" : 10
+        "range" : 10,
+        "score" : 10
     },
 
 };
