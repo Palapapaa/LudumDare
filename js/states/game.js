@@ -119,7 +119,7 @@ var gameState = {
       if(nbEnnemies > 0){
           for(var i = 0, l = nbEnnemies; i < l; ++i){
             if(this.ennemies.children[i].alive === true){
-              if(this.ennemies.children[i].x > 575){
+              if(this.ennemies.children[i].x > (585 -  this.ennemies.children[i].range)){
                 this.ennemies.children[i].body.velocity.x = 0;
                 if(this.ennemies.children[i].attackCooldown > 0)
                   this.ennemies.children[i].attackCooldown--;
@@ -207,6 +207,8 @@ var gameState = {
           
           
         ennemy.reset(0 , spawnY);
+          
+        ennemy.range = ennemyData['range'];
         ennemy.body.velocity.x = ennemyData['speed'] * 60;
       }
     },
