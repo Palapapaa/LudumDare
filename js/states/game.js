@@ -51,6 +51,8 @@ var gameState = {
         this.gameSounds.enemy_hit = game.add.audio("enemy_hit");
         this.gameSounds.player_hit = game.add.audio("player_hit");
         this.gameSounds.enemy_destroyed = game.add.audio("enemy_destroyed");
+        this.gameSounds.draw_rare = game.add.audio("draw_rare");
+
 
         this.drawCooldown=5000;
         this.autoDraw = game.time.events.loop(this.drawCooldown, this.drawCards, this);
@@ -260,6 +262,10 @@ var gameState = {
 
         }else{
             this.gameSounds.enemy_hit.play();
+            if(projectile.properties.indexOf('knockback') > -1){
+              
+                game.add.tween(ennemy).to({"x" : ennemy.x-75}).easing(Phaser.Easing.Exponential.Out).start();
+            }
         }
         //console.log(ennemy.life);
 
@@ -357,6 +363,9 @@ var gameState = {
                 var card = this.deck.shift();
                 if(typeof(card) !== "undefined"){
                     console.log("drawing card...");
+                    if(card.properties.indexOf("rare")>-1){
+                        this.gameSounds.draw_rare.play();
+                    }
                     var cardObj = {"thing":card};
                     cardObj=this.addCardToHand(cardObj,this.hand.length);
                     this.hand.push(cardObj);

@@ -47,6 +47,7 @@ var loadState = {
         game.load.audio('enemy_hit',['assets/audio/enemy_hit.wav',]);
         game.load.audio('player_hit',['assets/audio/player_hit.wav',]);
         game.load.audio('enemy_destroyed',['assets/audio/enemy_destroyed.wav',]);
+        game.load.audio('draw_rare',['assets/audio/draw_rare.wav',]);
     },
     create : function(){
         // On démarre l'état du menu
