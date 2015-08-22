@@ -49,8 +49,15 @@ var gameState = {
         //Colisions, a voir plus tard
         //game.physics.arcade.collide(this.player, this.ennemies);
 
+
+        this.projectiles = game.add.group();
+        this.projectiles.createMultiple(25, "sprite_rock");
+        game.physics.arcade.collide(this.ennemies, this.projectiles);
+
         //TODO Parametrer dans le niveau l'interval d'apparition des ennelus
         this.loopEnnemies = game.time.events.loop(1000, this.addEnnemy, this);
+
+        this.addProjectile(100,300);
 
     },
 
@@ -63,7 +70,7 @@ var gameState = {
             if(this.ennemies.children[i].x < 600)
               this.ennemies.children[i].x += this.levelSpeed;
           }
-          //game.physics.arcade.overlap(this.monster.body, this.ennemies, this.takeDamage, null, this);
+          game.physics.arcade.overlap(this.projectiles, this.ennemies, this.damageEnnemy, null, this);
       }
 
     },
@@ -101,6 +108,25 @@ var gameState = {
 
         ennemy.reset(0 , this.randomGenerator.integerInRange(150,400));
       }
+    },
+
+    addProjectile: function(x, y){
+      var projectile = this.projectiles.getFirstDead();
+
+      if(projectile){
+        projectile.anchor.setTo(0.5,0.5);
+        projectile.direction=this.RIGHT;
+        projectile.scale.x=0.5;
+        projectile.scale.y=0.5;
+        projectile.checkWorldBounds = true;
+        projectile.outOfBoundsKill = true;
+
+        projectile.reset(x, y);
+      }
+    },
+
+    damageEnnemy: function() {
+      console.log('olala je suis le damage');
     }
 
 

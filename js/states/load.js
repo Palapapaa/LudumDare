@@ -24,6 +24,7 @@ var loadState = {
         game.load.image('lifebar' , 'assets/graphics/lifebar.png');
         game.load.image('background' , 'assets/graphics/background_game.png');
         game.load.image('enemy_base' , 'assets/graphics/enemy_base.png');
+        game.load.image('sprite_rock' , 'assets/graphics/sprite_rock.png');
 
 
         // Chargement des sons
