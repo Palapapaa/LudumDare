@@ -22,7 +22,7 @@ var loadState = {
         for(var i = 0,l = thingsData.length;i<l;i++){
             game.load.image('sprite_'+thingsData[i].id , 'assets/graphics/sprite_'+thingsData[i].id+'.png');
             game.load.image('icon_'+thingsData[i].id , 'assets/graphics/icon_'+thingsData[i].id+'.png');
-            game.load.image('trajectoire_'+thingsData[i].id , 'assets/graphics/trajectoire_'+thingsData[i].id+'.png');
+            game.load.image('trajectoire_'+thingsData[i].trajectory , 'assets/graphics/trajectoire_'+thingsData[i].trajectory+'.png');
             game.load.audio('sound_'+thingsData[i].id,['assets/audio/sound_'+thingsData[i].id+'.wav',]);
         }
         

@@ -17,9 +17,19 @@ var gameState = {
         this.LEVELBOTTOM=game.global.gameHeight;
 
         this.levelSpeed = 1;
+        
+        
     },
 
     create : function(){
+        
+        //cards not yet drawn by the player
+        this.deck = [];
+        // cards currently visible on the GUI the player can use
+        this.hand = [];
+        
+        this.initDeck();
+        
         //Ajout du background
         game.add.sprite(0,0,"background");
 
@@ -127,6 +137,30 @@ var gameState = {
 
     damageEnnemy: function() {
       console.log('olala je suis le damage');
+    },
+    
+    initDeck : function(){
+        this.deck=[];
+        this.hand=[];
+        for(var i=0; i<15;i++){
+            this.deck.push("caddie");
+        }
+        
+        this.drawCards(3);
+        
+        
+        
+        
+    },
+    
+    drawCards : function(howMany){
+        for(var i=0; i<howMany;i++){
+            var card = this.deck.shift();
+            if(typeof(card) != "undefined"){
+                this.hand.push(card);
+            }
+            
+        }
     }
 
 
