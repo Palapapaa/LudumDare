@@ -7,7 +7,7 @@ var gameoverState = {
     preload : function(){
         console.log("Gameover state preload");
 
-
+        this.spacebar = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         this.menuSwitchCooldown=30;//temps avant de valider la sélection
     },
 
@@ -24,7 +24,7 @@ var gameoverState = {
         var score = game.add.text(game.world.centerX, 300, 'Score : ' + this.score,
         { font: 'bold 64px Arial', fill: '#ffffff' });
         score.anchor.setTo(0.5, 0.5);
-        var screenTitle = game.add.text(game.world.centerX, 480, 'Appuyez sur la touche valider pour continuer...',
+        var screenTitle = game.add.text(game.world.centerX, 480, 'Appuyez sur la touche espace pour continuer...',
         { font: 'bold 32px Arial', fill: '#ffffff' });
         screenTitle.anchor.setTo(0.5, 0.5);
 
@@ -33,16 +33,16 @@ var gameoverState = {
     },
 
     update : function(){
-         if(this.menuSwitchCooldown>0){
+         /*if(this.menuSwitchCooldown>0){
             this.menuSwitchCooldown--;
-        }
+        }*/
 
-/*
+
 
         // On quitte le menu
-        if(this.inputManager.select.isDown){
+        if(this.spacebar.isDown){
             this.select();
-        }*/
+        }
 
 
     },
@@ -50,9 +50,9 @@ var gameoverState = {
 
     //appui sur la touche select
     select : function(){
-        if(this.menuSwitchCooldown <= 0){
+        //if(this.menuSwitchCooldown <= 0){
 
-            game.state.start("worldmap");
-        }
+            game.state.start("game");
+      //  }
     }
 };
