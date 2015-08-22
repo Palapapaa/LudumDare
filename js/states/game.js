@@ -21,7 +21,7 @@ var gameState = {
     },
 
     create : function(){
-        
+        game.physics.startSystem(Phaser.Physics.ARCADE);
         //Ajout du background
         game.add.sprite(0,0,"background");
         //cards not yet drawn by the player
@@ -29,9 +29,8 @@ var gameState = {
         // cards currently visible on the GUI the player can use
         this.hand = [];
         this.handSprites = [];
-        
-        
-        
+
+
         this.initDeck();
 
         this.randomGenerator = new Phaser.RandomDataGenerator(1337);
@@ -49,7 +48,7 @@ var gameState = {
         //Ajout du monstre
         this.addMonster(650,200);
 
-        
+
         //Ajout du container de lifebar
         this.addLifebar();
 
@@ -59,8 +58,8 @@ var gameState = {
 
         this.ennemies.createMultiple(25, "enemy_base");
         //Colisions, a voir plus tard
-        //game.physics.arcade.collide(this.player, this.ennemies);
-
+        game.physics.arcade.collide(this.ennemies);
+        game.physics.enable(this.ennemies, Phaser.Physics.ARCADE);
 
         this.projectiles = game.add.group();
         this.projectiles.enableBody = true;
@@ -68,7 +67,7 @@ var gameState = {
         game.physics.arcade.collide(this.ennemies, this.projectiles);
 
         //TODO Parametrer dans le niveau l'interval d'apparition des ennelus
-        this.loopEnnemies = game.time.events.loop(1000, this.addEnnemy, this);
+        this.loopEnnemies = game.time.events.loop(2000, this.addEnnemy, this);
 
         this.addProjectile(500,300, 'rock');
 
@@ -79,8 +78,8 @@ var gameState = {
       var nbEnnemies = this.ennemies.children.length;
       if(nbEnnemies > 0){
           for(var i = 0, l = nbEnnemies; i < l; ++i){
-            if(this.ennemies.children[i].x < 575)
-              this.ennemies.children[i].x += this.levelSpeed;
+            if(this.ennemies.children[i].x > 575)
+              this.ennemies.children[i].body.velocity.x = 0;
           }
           game.physics.arcade.overlap(this.projectiles, this.ennemies, this.damageEnnemy, null, this);
       }
@@ -125,6 +124,7 @@ var gameState = {
         ennemy.outOfBoundsKill = true;
 
         ennemy.reset(0 , this.randomGenerator.integerInRange(150,400));
+        ennemy.body.velocity.x = 60;
       }
     },
 
@@ -168,31 +168,31 @@ var gameState = {
       }
 
     },
-    
+
     initDeck : function(){
         this.deck=[];
-        
+
         for(var i=0; i<15;i++){
             this.deck.push(thingsData.caddie);
         }
         this.resetHand();
         this.drawCards(3);
-        
+
     },
-    
+
     resetHand : function(){
         for(var l= this.hand.length,i=l-1;i>=0;i--){
-            this.removeFromHand(i);  
+            this.removeFromHand(i);
         }
     },
-    
+
     removeFromHand : function(index){
         this.hand[index].icon.destroy(true);
         this.hand[index].template.destroy(true);
-        
+
         this.hand.splice(index,1);
     },
-    
+
     drawCards : function(howMany){
         for(var i=0; i<howMany;i++){
             var card = this.deck.shift();
@@ -202,19 +202,19 @@ var gameState = {
                 var onclick = function(sprite, pointer){
                     console.log("touché");
                 }
-                
-                cardObj.template = this.game.add.sprite(300+this.hand.length * 70, 475, 'card_template');                
+
+                cardObj.template = this.game.add.sprite(300+this.hand.length * 70, 475, 'card_template');
                 cardObj.icon = this.game.add.sprite(300+this.hand.length * 70 + 14, 500, 'icon_'+card.id);
                 cardObj.template.inputEnabled=true;
                 cardObj.icon.inputEnabled=true;
                 cardObj.template.events.onInputDown.add(onclick,this);
                 cardObj.icon.events.onInputDown.add(onclick,this);
-                
-                
-                
+
+
+
                 this.hand.push(cardObj);
             }
-            
+
         }
     }
 
