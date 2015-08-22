@@ -23,7 +23,7 @@ var loadState = {
         for(var i = 0,l = keys.length;i<l;i++){
             game.load.image('sprite_'+keys[i].id , 'assets/graphics/sprite_'+keys[i].id+'.png');
             game.load.image('icon_'+keys[i].id , 'assets/graphics/icon_'+keys[i].id+'.png');
-            game.load.image('trajectoire_'+keys[i].id , 'assets/graphics/trajectoire_'+keys[i].id+'.png');
+            game.load.image('trajectoire_'+keys[i].trajectory , 'assets/graphics/trajectoire_'+keys[i].trajectory+'.png');
             game.load.audio('sound_'+keys[i].id,['assets/audio/sound_'+keys[i].id+'.wav',]);
         }
 
@@ -34,6 +34,7 @@ var loadState = {
         }
         // Chargement des images;
         game.load.image('monster' , 'assets/graphics/monster.png');
+        game.load.image('card_template' , 'assets/graphics/card_template.png');
         game.load.image('lifebar' , 'assets/graphics/lifebar.png');
         game.load.image('background' , 'assets/graphics/background_game.png');
         game.load.image('enemy_base' , 'assets/graphics/enemy_base.png');
@@ -53,8 +54,5 @@ var loadState = {
 
 
     }
-
-
-
 
 };

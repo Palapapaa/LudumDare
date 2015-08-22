@@ -21,8 +21,18 @@ var gameState = {
     },
 
     create : function(){
+        
         //Ajout du background
         game.add.sprite(0,0,"background");
+        //cards not yet drawn by the player
+        this.deck = [];
+        // cards currently visible on the GUI the player can use
+        this.hand = [];
+        this.handSprites = [];
+        
+        
+        
+        this.initDeck();
 
         this.randomGenerator = new Phaser.RandomDataGenerator(1337);
          //Sons
@@ -39,6 +49,7 @@ var gameState = {
         //Ajout du monstre
         this.addMonster(650,200);
 
+        
         //Ajout du container de lifebar
         this.addLifebar();
 
@@ -156,8 +167,58 @@ var gameState = {
 
       }
 
+    },
+    
+    initDeck : function(){
+        this.deck=[];
+        
+        for(var i=0; i<15;i++){
+            //this.deck.push(thingsData.caddie);
+            this.deck.push("caddie");
+        }
+        this.resetHand();
+        this.drawCards(3);
+        
+    },
+    
+    resetHand : function(){
+        for(var l= this.hand.length,i=l-1;i>=0;i--){
+            this.removeFromHand(i);  
+        }
+    },
+    
+    removeFromHand : function(index){
+        this.hand[index].icon.destroy(true);
+        this.hand[index].template.destroy(true);
+        
+        this.hand.splice(index,1);
+    },
+    
+    drawCards : function(howMany){
+        for(var i=0; i<howMany;i++){
+            var card = this.deck.shift();
+            if(typeof(card) !== "undefined"){
+                console.log(card);
+                var cardObj = {"thing":card};
+                var onclick = function(sprite, pointer){
+                    console.log("touché");
+                }
+                
+                cardObj.template = this.game.add.sprite(300+this.hand.length * 70, 475, 'card_template');                
+                //cardObj.icon = this.game.add.sprite(300+this.hand.length * 70 + 14, 500, 'icon_'+card.id);
+                cardObj.icon = this.game.add.sprite(300+this.hand.length * 70 + 14, 500, 'icon_'+card);
+                cardObj.template.inputEnabled=true;
+                cardObj.icon.inputEnabled=true;
+                cardObj.template.events.onInputDown.add(onclick,this);
+                cardObj.icon.events.onInputDown.add(onclick,this);
+                
+                
+                
+                this.hand.push(cardObj);
+            }
+            
+        }
     }
-
 
 
 };
