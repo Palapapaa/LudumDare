@@ -32,6 +32,7 @@ var loadState = {
         }
         // Chargement des images;
         game.load.image('monster' , 'assets/graphics/monster.png');
+        game.load.image('card_template' , 'assets/graphics/card_template.png');
         game.load.image('lifebar' , 'assets/graphics/lifebar.png');
         game.load.image('background' , 'assets/graphics/background_game.png');
         game.load.image('enemy_base' , 'assets/graphics/enemy_base.png');
