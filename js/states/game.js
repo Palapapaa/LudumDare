@@ -134,9 +134,6 @@ var gameState = {
       }
     },
 
-    damageEnnemy: function() {
-      console.log('olala je suis le damage');
-    }
     damageEnnemy: function(projectile, ennemy) {
       //Si l'ennemi ne s'est pas pris de dégat par ce projectile
       if(ennemy.damageBy.indexOf(projectile.projectileId) === -1){
@@ -178,7 +175,7 @@ var gameState = {
             }
             
         }
-
+    }
 
 
 };
