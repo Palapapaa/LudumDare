@@ -38,17 +38,16 @@ var gameState = {
         this.randomGenerator = new Phaser.RandomDataGenerator(1337);
          //Sons
 
-        // Groupe monstre
-        this.monsters = game.add.group();
-        this.monsters.enableBody = true;
-
-        this.monsters.createMultiple(25, "monster");
-
         console.log("game state create() finished");
 
 
         //Ajout du monstre
-        this.addMonster(650,200);
+        this.monster = game.add.sprite(700, 220, 'monster');
+        this.monster.checkWorldBounds = true;
+        this.monster.outOfBoundsKill = true;
+        this.monster.life = 100;
+        this.monster.reset(700, 220);
+        this.monster.enableBody = true;
 
 
         //Ajout du container de lifebar
@@ -80,8 +79,15 @@ var gameState = {
       var nbEnnemies = this.ennemies.children.length;
       if(nbEnnemies > 0){
           for(var i = 0, l = nbEnnemies; i < l; ++i){
-            if(this.ennemies.children[i].x > 575)
+            if(this.ennemies.children[i].x > 575){
               this.ennemies.children[i].body.velocity.x = 0;
+              if(this.ennemies.children[i].attackCooldown > 0)
+                this.ennemies.children[i].attackCooldown--;
+              else{
+                this.ennemyAttackMonster(this.ennemies.children[i].damage);
+                this.ennemies.children[i].attackCooldown = 60;
+              }
+            }
           }
           game.physics.arcade.overlap(this.projectiles, this.ennemies, this.damageEnnemy, null, this);
       }
@@ -106,17 +112,6 @@ var gameState = {
         }
     },
 
-    addMonster : function(x,y){
-
-        var monster = this.monsters.getFirstDead();
-
-        if(monster){
-            monster.checkWorldBounds = true;
-            monster.outOfBoundsKill = true;
-            monster.reset(x , y);
-        }
-    },
-
     addLifebar: function(){
       game.add.sprite(300,10,"lifebar");
 
@@ -125,16 +120,20 @@ var gameState = {
     addEnnemy: function(){
       var ennemy = this.ennemies.getFirstDead();
 
-      if(ennemy){
+      var ennemyData = enemyData["base"];
+
+
+      if(ennemy && typeof ennemyData !== "undefined"){
         //Donnée en dur à modifier TODO
         ennemy.life = 1;
         //Projectiles qui ont fait du damage sur l'ennemi
         ennemy.damageBy = [];
         ennemy.checkWorldBounds = true;
         ennemy.outOfBoundsKill = true;
-
+        ennemy.attackCooldown = ennemyData['cooldown'] * 60;
+        ennemy.damage = ennemyData['damage'];
         ennemy.reset(0 , this.randomGenerator.integerInRange(150,400));
-        ennemy.body.velocity.x = 60;
+        ennemy.body.velocity.x = ennemyData['speed'] * 60;
       }
     },
 
@@ -246,6 +245,13 @@ var gameState = {
     cardOnClick : function(sprite, pointer){
         console.log(sprite.thing);
         this.removeFromHand(sprite.handIndex);
+    },
+
+    ennemyAttackMonster : function(damage){
+      this.monster.life -= damage;
+      if(this.monster.life < 0)
+        this.monster.kill();
+      console.log(damage)
     }
 
 
