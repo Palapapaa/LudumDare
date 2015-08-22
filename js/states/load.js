@@ -22,6 +22,7 @@ var loadState = {
         game.load.image('hollande' , 'assets/graphics/hollande_sprite.png');
         game.load.image('monster' , 'assets/graphics/monster.png');
         game.load.image('lifebar' , 'assets/graphics/lifebar.png');
+        game.load.image('background' , 'assets/graphics/background_game.png');
 
 
         // Chargement des sons

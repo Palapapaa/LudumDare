@@ -18,6 +18,9 @@ var gameState = {
     },
 
     create : function(){
+        //Ajout du background
+        game.add.sprite(0,0,"background");
+
         this.randomGenerator = new Phaser.RandomDataGenerator(1337);
          //Sons
 
@@ -28,6 +31,7 @@ var gameState = {
         this.monsters.createMultiple(25, "monster");
 
         console.log("game state create() finished");
+
 
         //Ajout du monstre
         this.addMonster(700,300);
