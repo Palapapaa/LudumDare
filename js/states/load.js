@@ -37,6 +37,7 @@ var loadState = {
         game.load.image('card_template' , 'assets/graphics/card_template.png');
         game.load.image('card_overlay' , 'assets/graphics/card_overlay.png');
         game.load.image('lifebar' , 'assets/graphics/lifebar.png');
+        game.load.image('lifebar_full' , 'assets/graphics/lifebar_full.png');
         game.load.image('background' , 'assets/graphics/background_game.png');
         game.load.image('enemy_base' , 'assets/graphics/enemy_base.png');
         game.load.image('sprite_rock' , 'assets/graphics/sprite_rock.png');

@@ -31,6 +31,7 @@ var gameState = {
         // cards currently visible on the GUI the player can use
         this.hand = [];
         this.handSprites = [];
+<<<<<<< HEAD
         
         //score display
         
@@ -51,15 +52,15 @@ var gameState = {
         
         this.drawCooldown=5000;
         this.autoDraw = game.time.events.loop(this.drawCooldown, this.drawCards, this);
-        
+
         this.initDeck();
-        
+
         //default card that is always available but has a cooldown
         this.defaultCard = {"thing" : thingsData.rock, "cooldown": 180, "timer" : 0};
-        
-        this.defaultCard.template = this.game.add.sprite(100, 475, 'card_template');                
+
+        this.defaultCard.template = this.game.add.sprite(100, 475, 'card_template');
         this.defaultCard.icon = this.game.add.sprite(100 + 14, 500, 'icon_'+this.defaultCard.thing.id);
-        this.defaultCard.overlay = this.game.add.sprite(100, 575, 'card_overlay'); 
+        this.defaultCard.overlay = this.game.add.sprite(100, 575, 'card_overlay');
         this.defaultCard.overlay.scale.setTo(1,0);
         this.defaultCard.overlay.alpha=0.8;
         this.defaultCard.template.inputEnabled=true;
@@ -67,13 +68,13 @@ var gameState = {
         this.defaultCard.template.thing=this.defaultCard.thing;
         this.defaultCard.icon.thing=this.defaultCard.thing;
         this.defaultCard.template.defaultCard=true;
-        this.defaultCard.icon.defaultCard=true;        
+        this.defaultCard.icon.defaultCard=true;
         this.defaultCard.template.events.onInputDown.add(this.cardOnClick,this);
         this.defaultCard.icon.events.onInputDown.add(this.cardOnClick,this);
-        
+
 
         this.randomGenerator = new Phaser.RandomDataGenerator(1337);
-        
+
 
         console.log("game state create() finished");
 
@@ -115,18 +116,17 @@ var gameState = {
       var nbEnnemies = this.ennemies.children.length;
       if(nbEnnemies > 0){
           for(var i = 0, l = nbEnnemies; i < l; ++i){
-              if(this.ennemies.children[i].alive){
-                  if(this.ennemies.children[i].x > 575){
-                  this.ennemies.children[i].body.velocity.x = 0;
-                  if(this.ennemies.children[i].attackCooldown > 0)
-                    this.ennemies.children[i].attackCooldown--;
-                  else{
-                    this.ennemyAttackMonster(this.ennemies.children[i].damage);
-                    this.ennemies.children[i].attackCooldown = 60;
-                  }
+            if(this.ennemies.children[i].alive === true){
+              if(this.ennemies.children[i].x > 575){
+                this.ennemies.children[i].body.velocity.x = 0;
+                if(this.ennemies.children[i].attackCooldown > 0)
+                  this.ennemies.children[i].attackCooldown--;
+                else{
+                  this.ennemyAttackMonster(this.ennemies.children[i].damage);
+                  this.ennemies.children[i].attackCooldown = 60;
                 }
-                  
-              }            
+              }
+            }
           }
           game.physics.arcade.overlap(this.projectiles, this.ennemies, this.damageEnnemy, null, this);
       }
@@ -144,35 +144,36 @@ var gameState = {
                         if(this.projectiles.children[i].y>450){
                             this.projectiles.children[i].kill();
                         }
-                        break;   
+                        break;
                     }
                     case "groundstraight" : {
                         this.projectiles.children[i].x -= this.projectiles.children[i].speedX;
                         if(this.projectiles.children[i].x<-50){
                             this.projectiles.children[i].kill();
                         }
-                        break;   
+                        break;
                     }
 
                 }
-                
+
             }
-            
-          
+
+
         }
 
       }
-       
+
         if(this.defaultCard.timer>=0){
             this.defaultCard.timer--;
             this.defaultCard.overlay.scale.setTo(1,-this.defaultCard.timer/this.defaultCard.cooldown);
         }
-        
-        
+
+
     },
 
     addLifebar: function(){
-      game.add.sprite(300,10,"lifebar");
+      this.lifebar     = game.add.sprite(300,10,"lifebar");
+      this.lifebarFull = game.add.sprite(300,10,"lifebar_full");
 
     },
 
@@ -291,7 +292,7 @@ var gameState = {
     },
 
     drawCards : function(howMany){
-        
+
         if(!howMany)howMany=1;
         console.log("trying to draw "+howMany+" card(s)...");
         for(var i=0; i<howMany;i++){
@@ -317,10 +318,10 @@ var gameState = {
         cardObj.template.thing=cardObj.thing;
         cardObj.icon.thing=cardObj.thing;
         cardObj.template.handIndex=handIndex;
-        cardObj.icon.handIndex=handIndex;        
+        cardObj.icon.handIndex=handIndex;
         cardObj.template.events.onInputDown.add(this.cardOnClick,this);
         cardObj.icon.events.onInputDown.add(this.cardOnClick,this);
-        
+
         return cardObj;
 
     },
@@ -330,13 +331,13 @@ var gameState = {
         var thing = sprite.thing;
         if(sprite.defaultCard){
             if(this.defaultCard.timer<=0){
-                
+
                 this.defaultCard.timer=this.defaultCard.cooldown;
                 this.addProjectile(650+thing.offset.x,200+thing.offset.y,thing.id);
-                
+
             }
         }else{
-            
+
             this.addProjectile(650+thing.offset.x,200+thing.offset.y,thing.id);
             this.removeFromHand(sprite.handIndex);
         }
@@ -346,6 +347,7 @@ var gameState = {
       this.monster.life -= damage;
       if(this.monster.life < 0)
         this.monster.kill();
+      this.lifebarFull.scale.setTo(this.monster.life / 100, 1);
       console.log(damage)
     }
 
