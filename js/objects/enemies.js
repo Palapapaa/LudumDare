@@ -59,5 +59,17 @@ var enemyData = {
         "spawnthreshold" : 20,
         "spawnchance" : 1,
     },
+    "archer" : {
+        "id" : "archer",
+        "health" : 3,
+        "speed" : 0.5,
+        "pattern" : "walking",
+        "damage" : 3,
+        "cooldown" : 1, //Temps en secondes
+        "range" : 250,
+        "score" : 50,
+        "spawnthreshold" : 20,
+        "spawnchance" : 10,
+    },
 
 };
