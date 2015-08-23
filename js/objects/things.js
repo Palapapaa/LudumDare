@@ -22,7 +22,7 @@ var thingsData = {
     },
     'molotov' : {
         "id" : "molotov",
-        "damage" : 2,
+        "damage" : 1,
         "trajectory" : "lob",
         "cost" : 0,
         "speed" : 4,

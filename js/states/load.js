@@ -39,6 +39,8 @@ var loadState = {
         game.load.spritesheet('monster' , 'assets/graphics/monster_idle.png', 128, 220, 2);
 
         game.load.image('card_template' , 'assets/graphics/card_template.png');
+        game.load.image('card_template_default' , 'assets/graphics/card_template_default.png');
+        game.load.image('card_template_rare' , 'assets/graphics/card_template_rare.png');
         game.load.image('card_overlay' , 'assets/graphics/card_overlay.png');
         game.load.image('card_cooldown' , 'assets/graphics/card_cooldown.png');
         game.load.image('lifebar' , 'assets/graphics/lifebar.png');
@@ -46,7 +48,7 @@ var loadState = {
         game.load.image('background' , 'assets/graphics/background_game.png');
         
         game.load.image('particle_fire' , 'assets/graphics/particle_fire.png');
-
+        game.load.image('explosion_overlay' , 'assets/graphics/explosion_overlay.png');
 
         // Chargement des sons
         game.load.audio('draw_rare',['assets/audio/draw_rare.wav',]);

@@ -62,7 +62,7 @@ var gameState = {
         //default card that is always available but has a cooldown
         this.defaultCard = {"thing" : thingsData.rock, "cooldown": 180, "timer" : 0};
 
-        this.defaultCard.template = this.game.add.sprite(100, 495, 'card_template');
+        this.defaultCard.template = this.game.add.sprite(100, 495, 'card_template_default');
         this.defaultCard.icon = this.game.add.sprite(100 + 32, 532, 'icon_'+this.defaultCard.thing.id);
         this.defaultCard.icon.anchor.setTo(0.5, 0.5);
         this.defaultCard.trajectory = this.game.add.sprite(148, 585, 'trajectory_'+this.defaultCard.thing.trajectory);
@@ -84,7 +84,10 @@ var gameState = {
 
         console.log("game state create() finished");
 
-
+        
+        
+        
+        
         //Ajout du monstre
         this.monster = game.add.sprite(650, 240, 'monster');
         this.monster.checkWorldBounds = true;
@@ -100,25 +103,48 @@ var gameState = {
         // Groupe ennemi
         this.ennemies    = game.add.group();
         this.ennemies.enableBody = true;
-
         this.ennemies.createMultiple(25, "enemy_base");
-        //Colisions, a voir plus tard
-        game.physics.arcade.collide(this.ennemies);
-        game.physics.enable(this.ennemies, Phaser.Physics.ARCADE);
+        
+        //calques pour détecter les ennemis pris dans une explosion
+        this.explosions    = game.add.group();
+        this.explosions.enableBody = true;
+        this.explosions.createMultiple(5, "explosion_overlay");
+        this.explosions.setAll('anchor.x', 0.5);
+        this.explosions.setAll('anchor.y', 0.5);
+        
+        
+        //Colisions, a voir plus tard        
+        /*game.physics.arcade.collide(this.ennemies);
+        game.physics.enable(this.ennemies, Phaser.Physics.ARCADE);*/
 
         this.projectiles = game.add.group();
         this.projectiles.enableBody = true;
         this.projectiles.createMultiple(25, "sprite_rock");
         game.physics.arcade.collide(this.ennemies, this.projectiles);
+        game.physics.arcade.collide(this.ennemies,this.explosions);
 
         //TODO Parametrer dans le niveau l'interval d'apparition des ennelus
         this.loopEnnemies = game.time.events.loop(2250, this.addEnnemy, this);
         
+        //dot sur le feu
+        this.loopFireDot = game.time.events.loop(1750, this.fireDot, this);
+        
+        //Particules explosions
+        this.emitterExplosion = game.add.emitter(0, 0 , 180);
+        this.emitterExplosion.setXSpeed(-150, 150);
+        this.emitterExplosion.setYSpeed(-150, 150);
+        this.emitterExplosion.minParticleScale = 0.8;
+        this.emitterExplosion.maxParticleScale = 1.6;
+        this.emitterExplosion.gravity = 5;
+        this.emitterExplosion.makeParticles('particle_fire');
+        
         //Particules feu
-        this.emitterFire = game.add.emitter(0, 0 , 35);
-        this.emitterFire.setXSpeed(-250, 250);
-        this.emitterFire.setYSpeed(-250, 250);
-        this.emitterFire.gravity = 0;
+        this.emitterFire = game.add.emitter(0, 0 , 30);
+        this.emitterFire.setXSpeed(0, 0);
+        this.emitterFire.setYSpeed(-15, -10);
+        this.emitterFire.minParticleScale = 1.8;
+        this.emitterFire.maxParticleScale = 1.6;
+        this.emitterFire.gravity = 5;
         this.emitterFire.makeParticles('particle_fire');
         
 
@@ -140,9 +166,12 @@ var gameState = {
                   this.ennemies.children[i].attackCooldown = 60;
                 }
               }
+                
+                
             }
           }
-          game.physics.arcade.overlap(this.projectiles, this.ennemies, this.damageEnnemy, null, this);
+          game.physics.arcade.overlap(this.projectiles, this.ennemies, this.damageEnnemy, null, this);          
+          game.physics.arcade.overlap(this.explosions, this.ennemies, this.explosionDamage, null, this);
       }
         //update projectiles according to their trajectory
       var nbProjectiles = this.projectiles.children.length;
@@ -156,6 +185,9 @@ var gameState = {
                         this.projectiles.children[i].y -= this.projectiles.children[i].speedY;
                         this.projectiles.children[i].speedY -= 0.1;
                         if(this.projectiles.children[i].y>450){
+                            if(this.projectiles.children[i].properties.indexOf('explosive') > -1){            
+                                this.addExplosion(this.projectiles.children[i].x,this.projectiles.children[i].y,this.projectiles.children[i].damage,this.projectiles.children[i].properties);
+                            }
                             this.projectiles.children[i].kill();
                         }
                         break;
@@ -175,6 +207,15 @@ var gameState = {
 
         }
 
+      }
+        //destruction des calques d'explosion encore actifs
+      var nbExplosions = this.explosions.children.length;
+      if(nbExplosions > 0){
+          for(var i = 0, l = nbExplosions; i < l; ++i){
+            if(this.explosions.children[i].alive === true){
+                this.explosions.children[i].kill();
+            }
+          }
       }
 
         if(this.defaultCard.timer>=0){
@@ -212,7 +253,8 @@ var gameState = {
         ennemy.damage = ennemyData['damage'];
         ennemy.score = ennemyData['score'];
         ennemy.loadTexture("enemy_"+type);
-
+          ennemy.tint="0xffffff";
+          ennemy.onFire=false;
        ennemy.animations.add('move', [0,1], 12, true);
        ennemy.animations.play('move');
 
@@ -260,6 +302,76 @@ var gameState = {
       }
     },
 
+    addExplosion: function(x,y,damage,properties){
+        var explosion = this.explosions.getFirstDead();
+        if(explosion){
+            this.emitterExplosion.x=x;
+            this.emitterExplosion.y=y;
+            this.emitterExplosion.start(true, 400, null, 60);
+            explosion.reset(x, y);
+            explosion.damage = damage;
+            explosion.properties = properties;
+            //game.physics.arcade.overlap(this.exposions, this.ennemies, this.explosionDamage, null, this);
+            
+        }
+        
+        
+    },
+    
+    fireDot : function(){
+        //mise à jour des ennemis
+          var nbEnnemies = this.ennemies.children.length;
+          if(nbEnnemies > 0){
+              for(var i = 0, l = nbEnnemies; i < l; ++i){
+                if(this.ennemies.children[i].alive === true){
+                  
+                    if(this.ennemies.children[i].onFire){
+                        this.emitterFire.x=this.ennemies.children[i].x+this.ennemies.children[i].width/2;
+                        this.emitterFire.y=this.ennemies.children[i].y;
+                        this.emitterFire.start(true, 1750, null, 1); 
+                        this.ennemies.children[i].life-=1;
+                        if(this.ennemies.children[i].life <= 0){
+                            this.killEnemy(this.ennemies.children[i]);
+
+                        }
+                    }
+
+                }
+              }
+          }
+    },
+    
+    explosionDamage : function(explosion, ennemy){
+        console.log("ennemi touchaient");
+        ennemy.life -= explosion.damage;
+        if(ennemy.life <= 0){
+            this.killEnemy(ennemy);
+
+        }else{
+            this.gameSounds.enemy_hit.play();
+            if(explosion.properties.indexOf('knockback') > -1){
+
+                game.add.tween(ennemy).to({"x" : ennemy.x-75}).easing(Phaser.Easing.Exponential.Out).start();
+            }
+            if(explosion.properties.indexOf('fire') > -1){
+
+                ennemy.onFire=true;
+                ennemy.tint="0xff4400";
+            }
+        }
+    },
+    
+    killEnemy: function(ennemy){
+        this.score+=ennemy.score;
+        ennemy.kill();
+        this.gameSounds.enemy_destroyed.play();
+        this.updateScore();
+        this.enemiesKilled++;
+        this.updateAvailableEnemies();
+        
+    },
+    
+    
     damageEnnemy: function(projectile, ennemy) {
       //Si l'ennemi ne s'est pas pris de dégat par ce projectile
       if(ennemy.damageBy.indexOf(projectile.projectileId) === -1){
@@ -268,21 +380,25 @@ var gameState = {
         ennemy.life -= projectile.damage;
         //Si le projectile n'est pas perforant
         if(projectile.properties.indexOf('piercing') === -1){
-          projectile.kill();
+            if(projectile.properties.indexOf('explosive') > -1){            
+                this.addExplosion(projectile.x,projectile.y,projectile.damage,projectile.properties);
+            }
+            projectile.kill();
+            
         }
         if(ennemy.life <= 0){
-            this.score+=ennemy.score;
-            ennemy.kill();
-            this.gameSounds.enemy_destroyed.play();
-            this.updateScore();
-            this.enemiesKilled++;
-            this.updateAvailableEnemies();
+            this.killEnemy(ennemy);
 
         }else{
             this.gameSounds.enemy_hit.play();
             if(projectile.properties.indexOf('knockback') > -1){
 
                 game.add.tween(ennemy).to({"x" : ennemy.x-75}).easing(Phaser.Easing.Exponential.Out).start();
+            }
+            if(projectile.properties.indexOf('fire') > -1){
+
+                ennemy.onFire=true;
+                ennemy.tint="0xff4400";
             }
         }
         //console.log(ennemy.life);
@@ -329,13 +445,13 @@ var gameState = {
     initDeck : function(){
         this.deck=[];
 
-        for(var i=0; i<2;i++){
+        for(var i=0; i<6;i++){
             this.deck.push(thingsData.caddie);
         }
-        for(var i=0; i<10;i++){
+        for(var i=0; i<12;i++){
             this.deck.push(thingsData.rock);
         }
-        for(var i=0; i<10;i++){
+        for(var i=0; i<2;i++){
             this.deck.push(thingsData.molotov);
         }
 
@@ -401,8 +517,11 @@ var gameState = {
     },
 
     addCardToHand : function(cardObj,handIndex){
-
-        cardObj.template = this.game.add.sprite(200+handIndex * 70, 495, 'card_template');
+        if(cardObj.thing.properties.indexOf("rare")>-1){            
+            cardObj.template = this.game.add.sprite(200+handIndex * 70, 495, 'card_template_rare');
+        }else{            
+            cardObj.template = this.game.add.sprite(200+handIndex * 70, 495, 'card_template');
+        }
         cardObj.icon = this.game.add.sprite(200+handIndex * 70 + 32, 532, 'icon_'+cardObj.thing.id);
         cardObj.icon.anchor.setTo(0.5, 0.5);
         cardObj.trajectory = this.game.add.sprite(248+handIndex * 70, 585, 'trajectory_'+cardObj.thing.trajectory);
