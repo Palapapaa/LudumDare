@@ -67,6 +67,12 @@ var gameState = {
         this.gameSounds.enemy_destroyed = game.add.audio("enemy_destroyed");
         this.gameSounds.draw_rare = game.add.audio("draw_rare");
 
+        //Ennemis decedaient
+        this.deadEnnemies = game.add.group();
+        this.deadEnnemies.createMultiple(25, "enemy_base");
+        this.deadEnnemies.setAll('anchor.x', 0.5);
+        this.deadEnnemies.setAll('anchor.y', 0.5);
+        game.physics.enable(this.deadEnnemies, Phaser.Physics.ARCADE);
 
         this.drawCooldown=5000;
         this.autoDraw = game.time.events.loop(this.drawCooldown, this.drawCards, this);
@@ -98,10 +104,6 @@ var gameState = {
 
         console.log("game state create() finished");
 
-        
-        
-        
-        
         //Ajout du monstre
         this.monster = game.add.sprite(650, 240, 'monster');
         this.monster.checkWorldBounds = true;
@@ -118,16 +120,17 @@ var gameState = {
         this.ennemies    = game.add.group();
         this.ennemies.enableBody = true;
         this.ennemies.createMultiple(25, "enemy_base");
-        
+
+
         //calques pour détecter les ennemis pris dans une explosion
         this.explosions    = game.add.group();
         this.explosions.enableBody = true;
         this.explosions.createMultiple(5, "explosion_overlay");
         this.explosions.setAll('anchor.x', 0.5);
         this.explosions.setAll('anchor.y', 0.5);
-        
-        
-        //Colisions, a voir plus tard        
+
+
+        //Colisions, a voir plus tard
         /*game.physics.arcade.collide(this.ennemies);
         game.physics.enable(this.ennemies, Phaser.Physics.ARCADE);*/
 
@@ -140,10 +143,10 @@ var gameState = {
         //TODO Parametrer dans le niveau l'interval d'apparition des ennelus
         this.loopEnnemies = game.time.events.loop(2250, this.addEnnemy, this);
 
-        
+
         //dot sur le feu
         this.loopFireDot = game.time.events.loop(1750, this.fireDot, this);
-        
+
         //Particules explosions
         this.emitterExplosion = game.add.emitter(0, 0 , 180);
         this.emitterExplosion.setXSpeed(-150, 150);
@@ -152,7 +155,7 @@ var gameState = {
         this.emitterExplosion.maxParticleScale = 1.6;
         this.emitterExplosion.gravity = 5;
         this.emitterExplosion.makeParticles('particle_fire');
-        
+
         //Particules feu
         this.emitterFire = game.add.emitter(0, 0 , 30);
         this.emitterFire.setXSpeed(0, 0);
@@ -194,14 +197,26 @@ var gameState = {
                   this.ennemies.children[i].x+=1;
                 }
               }
-                
-                
+
+
             }
           }
-          game.physics.arcade.overlap(this.projectiles, this.ennemies, this.damageEnnemy, null, this);          
+          game.physics.arcade.overlap(this.projectiles, this.ennemies, this.damageEnnemy, null, this);
           game.physics.arcade.overlap(this.explosions, this.ennemies, this.explosionDamage, null, this);
       }
       this.enemiesGotSpeedBoost = gotBoostNextFrame;
+
+      var nbDead = this.deadEnnemies.children.length;
+      if(nbDead > 0){
+          for(var i = 0, l = nbDead; i < l; ++i){
+            if(this.deadEnnemies.children[i].alive === true){
+              this.deadEnnemies.children[i].angle += 5;
+              this.deadEnnemies.children[i].y += this.deadEnnemies.children[i].speedY;
+              this.deadEnnemies.children[i].speedY += 0.1;
+
+            }
+          }
+      }
       //update projectiles according to their trajectory
       var nbProjectiles = this.projectiles.children.length;
       if(nbProjectiles  > 0){
@@ -214,7 +229,7 @@ var gameState = {
                         this.projectiles.children[i].y -= this.projectiles.children[i].speedY;
                         this.projectiles.children[i].speedY -= 0.1;
                         if(this.projectiles.children[i].y>450){
-                            if(this.projectiles.children[i].properties.indexOf('explosive') > -1){            
+                            if(this.projectiles.children[i].properties.indexOf('explosive') > -1){
                                 this.addExplosion(this.projectiles.children[i].x,this.projectiles.children[i].y,this.projectiles.children[i].damage,this.projectiles.children[i].properties);
                             }
                             this.projectiles.children[i].kill();
@@ -280,10 +295,10 @@ var gameState = {
         ennemy.damage = ennemyData['damage'];
         ennemy.score = ennemyData['score'];
         ennemy.loadTexture("enemy_"+type);
-          ennemy.tint="0xffffff";
-          ennemy.onFire=false;
-       ennemy.animations.add('move', [0,1], 12, true);
-       ennemy.animations.play('move');
+        ennemy.tint="0xffffff";
+        ennemy.onFire=false;
+        ennemy.animations.add('move', [0,1], 12, true);
+        ennemy.animations.play('move');
 
           var spawnY;
           switch(type){
@@ -343,23 +358,23 @@ var gameState = {
             explosion.damage = damage;
             explosion.properties = properties;
             //game.physics.arcade.overlap(this.exposions, this.ennemies, this.explosionDamage, null, this);
-            
+
         }
-        
-        
+
+
     },
-    
+
     fireDot : function(){
         //mise à jour des ennemis
           var nbEnnemies = this.ennemies.children.length;
           if(nbEnnemies > 0){
               for(var i = 0, l = nbEnnemies; i < l; ++i){
                 if(this.ennemies.children[i].alive === true){
-                  
+
                     if(this.ennemies.children[i].onFire){
                         this.emitterFire.x=this.ennemies.children[i].x+this.ennemies.children[i].width/2;
                         this.emitterFire.y=this.ennemies.children[i].y;
-                        this.emitterFire.start(true, 1750, null, 1); 
+                        this.emitterFire.start(true, 1750, null, 1);
                         this.ennemies.children[i].life-=1;
                         if(this.ennemies.children[i].life <= 0){
                             this.killEnemy(this.ennemies.children[i]);
@@ -371,7 +386,7 @@ var gameState = {
               }
           }
     },
-    
+
     explosionDamage : function(explosion, ennemy){
         console.log("ennemi touchaient");
         ennemy.life -= explosion.damage;
@@ -391,18 +406,30 @@ var gameState = {
             }
         }
     },
-    
+
     killEnemy: function(ennemy){
         this.score+=ennemy.score;
+
+        var dead = this.deadEnnemies.getFirstDead();
+        if(dead != null){
+          dead.loadTexture("enemy_"+ennemy.type);
+          dead.angle = 0;
+          dead.speedY = -2;
+          ennemy.checkWorldBounds = true;
+          ennemy.outOfBoundsKill = true;
+          dead.reset( ennemy.x, ennemy.y + (ennemy.width/2))
+        }
+
+
         ennemy.kill();
         this.gameSounds.enemy_destroyed.play();
         this.updateScore();
         this.enemiesKilled++;
         this.updateAvailableEnemies();
-        
+
     },
-    
-    
+
+
     damageEnnemy: function(projectile, ennemy) {
       //Si l'ennemi ne s'est pas pris de dégat par ce projectile
       if(ennemy.damageBy.indexOf(projectile.projectileId) === -1){
@@ -411,11 +438,11 @@ var gameState = {
         ennemy.life -= projectile.damage;
         //Si le projectile n'est pas perforant
         if(projectile.properties.indexOf('piercing') === -1){
-            if(projectile.properties.indexOf('explosive') > -1){            
+            if(projectile.properties.indexOf('explosive') > -1){
                 this.addExplosion(projectile.x,projectile.y,projectile.damage,projectile.properties);
             }
             projectile.kill();
-            
+
         }
         if(ennemy.life <= 0){
             this.killEnemy(ennemy);
@@ -476,7 +503,7 @@ var gameState = {
     initDeck : function(){
         this.deck=JSON.parse(JSON.stringify(this.stock));
 
-        
+
 
         this.deck = this.shuffleArray(this.deck);
 
@@ -540,9 +567,9 @@ var gameState = {
     },
 
     addCardToHand : function(cardObj,handIndex){
-        if(cardObj.thing.properties.indexOf("rare")>-1){            
+        if(cardObj.thing.properties.indexOf("rare")>-1){
             cardObj.template = this.game.add.sprite(200+handIndex * 70, 495, 'card_template_rare');
-        }else{            
+        }else{
             cardObj.template = this.game.add.sprite(200+handIndex * 70, 495, 'card_template');
         }
         cardObj.icon = this.game.add.sprite(200+handIndex * 70 + 32, 532, 'icon_'+cardObj.thing.id);
