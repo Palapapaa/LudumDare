@@ -59,7 +59,7 @@ var gameState = {
         this.scoreDisplay = game.add.text(20,20,"Score : 00000000",{"fill" : "#CACACA"});
 
 
-        this.availableEnemies = ["archer"];
+        this.availableEnemies = ["base"];
         this.totalEnemySpawnChance = enemyData.base.spawnchance;
         this.enemiesKilled = 0;
         this.enemiesGotSpeedBoost = false;

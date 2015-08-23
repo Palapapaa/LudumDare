@@ -69,7 +69,7 @@ var enemyData = {
         "range" : 250,
         "score" : 50,
         "spawnthreshold" : 20,
-        "spawnchance" : 10,
+        "spawnchance" : 2,
     },
 
 };
