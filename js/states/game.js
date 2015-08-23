@@ -714,7 +714,7 @@ var gameState = {
           this.monster.life -= damage;
           if(this.monster.life < 0){
             this.monster.kill();
-            game.state.start('gameover', true, false, this.score);
+            game.state.start('gameover', false, false, this.score);
           }
           this.lifebarFull.scale.setTo(this.monster.life / 100, 1);
           //console.log(damage);
