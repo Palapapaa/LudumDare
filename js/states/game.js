@@ -86,7 +86,7 @@ var gameState = {
         this.deadEnnemies.setAll('anchor.x', 0.5);
         this.deadEnnemies.setAll('anchor.y', 0.5);
         game.physics.enable(this.deadEnnemies, Phaser.Physics.ARCADE);
-        this.drawCooldown=4500;
+        this.drawCooldown=4000;
         this.drawTimer=this.drawCooldown;
 
          
@@ -180,7 +180,7 @@ var gameState = {
         
         //score display
         this.score = 0;
-        this.scoreDisplay = game.add.text(20,20,"SCORE : 00000000",{"fill" : "#CACACA","fontSize" : 24});
+        this.scoreDisplay = game.add.text(10,20,"SCORE : 00000000",{"fill" : "#CACACA","fontSize" : 24});
         
         
         //Ajout du container de lifebar
@@ -197,16 +197,16 @@ var gameState = {
 
         
         this.shuffling = false;
-        this.shuffleCooldown=6000;
+        this.shuffleCooldown=5000;
         this.shuffleTimer=this.shuffleCooldown;
         this.shuffleEvent = null;
 
-        this.autoDraw = game.time.events.loop(this.drawCooldown, this.drawCards, this,1);
+        this.autoDraw = game.time.events.loop(this.drawCooldown, this.drawCards, this,1,true);
 
         this.initDeck();
         //draw more cards at the beginning
         for(var i =3;i<5;i++){
-            game.time.events.add(i*500, this.drawCards, this, 1);
+            game.time.events.add(i*500, this.drawCards, this, 1,false);
         }
         
 
@@ -216,9 +216,9 @@ var gameState = {
         this.defaultCard.template = this.game.add.sprite(100, 495, 'card_template_default');
         this.defaultCard.icon = this.game.add.sprite(100 + 32, 532, 'icon_'+this.defaultCard.thing.id);
         this.defaultCard.icon.anchor.setTo(0.5, 0.5);
-        this.defaultCard.trajectory = this.game.add.sprite(148, 585, 'trajectory_'+this.defaultCard.thing.trajectory);
+        this.defaultCard.trajectory = this.game.add.sprite(148, 584, 'trajectory_'+this.defaultCard.thing.trajectory);
         this.defaultCard.trajectory.anchor.setTo(0.5, 0.5);
-        this.defaultCard.damage = this.game.add.text(116, 587, this.defaultCard.thing.damage,{"fontSize": 18});
+        this.defaultCard.damage = this.game.add.text(119, 585, this.defaultCard.thing.damage,{"fontSize": 18});
         this.defaultCard.damage.anchor.setTo(0.5, 0.5);
         this.defaultCard.cooldownSprite = this.game.add.sprite(104, 590, 'card_cooldown');
         this.defaultCard.cooldownSprite.scale.setTo(1,0);
@@ -663,13 +663,13 @@ var gameState = {
         this.deck = this.shuffleArray(this.deck);
 
         this.resetHand();for(var i =0;i<3;i++){
-            game.time.events.add(i*500, this.drawCards, this, 1);
+            game.time.events.add(i*500, this.drawCards, this, 1,false);
         }
         this.gameSounds.shuffle.play();
         this.shuffling=false;
         this.shuffleEvent=null;
         game.time.events.remove(this.autoDraw);
-        this.autoDraw = game.time.events.loop(this.drawCooldown, this.drawCards, this,1);
+        this.autoDraw = game.time.events.loop(this.drawCooldown, this.drawCards, this,1,true);
 
 
 
@@ -710,9 +710,11 @@ var gameState = {
         }
     },
 
-    drawCards : function(howMany){
+    drawCards : function(howMany,resetTimer){
         if(!this.shuffling){
-            this.drawTimer=this.drawCooldown;
+            if(resetTimer){                
+                this.drawTimer=this.drawCooldown;
+            }
             if(!howMany)howMany=1;
             console.log("trying to draw "+howMany+" card(s)...");
 
@@ -751,9 +753,9 @@ var gameState = {
         }
         cardObj.icon = this.game.add.sprite(200+handIndex * 70 + 32, 532, 'icon_'+cardObj.thing.id);
         cardObj.icon.anchor.setTo(0.5, 0.5);
-        cardObj.trajectory = this.game.add.sprite(248+handIndex * 70, 585, 'trajectory_'+cardObj.thing.trajectory);
+        cardObj.trajectory = this.game.add.sprite(248+handIndex * 70, 584, 'trajectory_'+cardObj.thing.trajectory);
         cardObj.trajectory.anchor.setTo(0.5, 0.5);
-        cardObj.damage = this.game.add.text(216+handIndex * 70, 587, cardObj.thing.damage,{"fontSize": 18});
+        cardObj.damage = this.game.add.text(219+handIndex * 70, 585, cardObj.thing.damage,{"fontSize": 18});
         cardObj.damage.anchor.setTo(0.5, 0.5);
         cardObj.overlay = this.game.add.sprite(200+handIndex * 70, 495, 'card_overlay');
         cardObj.overlay.inputEnabled=true;
