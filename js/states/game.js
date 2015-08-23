@@ -53,7 +53,7 @@ var gameState = {
         this.scoreDisplay = game.add.text(20,20,"Score : 00000000",{"fill" : "#CACACA"});
 
 
-        this.availableEnemies = ["base"];
+        this.availableEnemies = ["archer"];
         this.totalEnemySpawnChance = enemyData.base.spawnchance;
         this.enemiesKilled = 0;
         this.enemiesGotSpeedBoost = false;
@@ -141,8 +141,13 @@ var gameState = {
         this.monster.animations.add('idle', [0,1], 3, true);
         this.monster.animations.add('attack', [2,3], 3, false);
         this.monster.animations.play('idle');
+        game.physics.enable(this.monster, Phaser.Physics.ARCADE);
 
-
+        //Flèches
+        this.arrows = game.add.group();
+        this.arrows.createMultiple(25, "arrow");
+        game.physics.enable(this.arrows, Phaser.Physics.ARCADE);
+        game.physics.arcade.collide(this.arrows,this.monster);
 
 
         //Ajout du container de lifebar
@@ -221,6 +226,15 @@ var gameState = {
                 else{
                   this.ennemyAttackMonster(this.ennemies.children[i].damage);
                   this.ennemies.children[i].attackCooldown = 60;
+                  if(this.ennemies.children[i].type === "archer"){
+                    var arrow = this.arrows.getFirstDead();
+                    if(arrow){
+                      arrow.checkWorldBounds = true;
+                      arrow.outOfBoundsKill = true;
+                      arrow.speedY = -1;
+                      arrow.reset(this.ennemies.children[i].x , this.ennemies.children[i].y);
+                    }
+                  }
                 }
 
                 if(this.ennemies.children[i].type === "support"){
@@ -256,8 +270,7 @@ var gameState = {
             if(this.deadEnnemies.children[i].alive === true){
               this.deadEnnemies.children[i].angle += 8;
               this.deadEnnemies.children[i].y += this.deadEnnemies.children[i].speedY;
-              this.deadEnnemies.children[i].speedY += 0.1;
-
+              this.deadEnnemies.children[i].speedY += 0.01;
             }
           }
       }
@@ -301,6 +314,20 @@ var gameState = {
         }
 
       }
+      //Fleches
+        var nbArrows = this.arrows.children.length;
+        if(nbArrows > 0){
+            for(var i = 0, l = nbArrows; i < l; ++i){
+              if(this.arrows.children[i].alive === true){
+
+                  this.arrows.children[i].x+= 3;
+                  this.arrows.children[i].y+= this.arrows.children[i].speedY;
+                  this.arrows.children[i].speedY += 0.01;
+                  game.physics.arcade.overlap(this.arrows.children[i], this.monster, this.killArrow, null, this);
+              }
+            }
+        }
+
         //destruction des calques d'explosion encore actifs
           var nbExplosions = this.explosions.children.length;
           if(nbExplosions > 0){
@@ -341,7 +368,7 @@ var gameState = {
         this.lifebar.x-=this.lifebar.width/2;
         this.lifebarFull = game.add.sprite(game.global.gameWidth/2,25,"lifebar_full");
         this.lifebarFull.x-=this.lifebarFull.width/2;
-        
+
         this.lifespriteFull = game.add.sprite(this.lifebarFull.x+this.lifebarFull.width+10,27,"lifesprite_full");
         this.lifespriteFull.anchor.setTo(0.5,0.5);
         this.lifespriteDead = game.add.sprite(this.lifebarFull.x-10,27,"lifesprite_dead");
@@ -379,6 +406,7 @@ var gameState = {
               case "armored":
               case "support":
               case "dark":
+              case "archer":
               case "base": spawnY=this.randomGenerator.integerInRange(350,400); break;
               case "flying_base": spawnY=this.randomGenerator.integerInRange(50,150); break;
           }
@@ -723,5 +751,10 @@ var gameState = {
           }
           this.lifebarFull.scale.setTo(this.monster.life / 100, 1);
           //console.log(damage);
+    },
+
+    killArrow : function(arrow){
+      console.log("crève")
+      arrow.kill();
     }
 };

@@ -31,11 +31,11 @@ var loadState = {
         var keys = Object.keys(enemyData);
         for(var i = 0,l = keys.length;i<l;i++){
             //game.load.image();
-            if(keys[i]==="flying_base"){                
+            if(keys[i]==="flying_base"){
                 game.load.spritesheet('enemy_'+keys[i] , 'assets/graphics/enemy_'+keys[i]+'.png', 65, 150,4);
             }else{
                 game.load.spritesheet('enemy_'+keys[i] , 'assets/graphics/enemy_'+keys[i]+'.png', 65, 100,4);
-                    
+
             }
 
         }
@@ -55,7 +55,9 @@ var loadState = {
         game.load.image('drawbar' , 'assets/graphics/drawbar.png');
         game.load.image('drawbar_full' , 'assets/graphics/drawbar_full.png');
         game.load.image('background' , 'assets/graphics/background_game.png');
-        
+        game.load.image('arrow' , 'assets/graphics/sprite_arrow.png');
+
+
         game.load.image('particle_fire' , 'assets/graphics/particle_fire.png');
         game.load.image('explosion_overlay' , 'assets/graphics/explosion_overlay.png');
 
@@ -64,17 +66,17 @@ var loadState = {
         game.load.audio('enemy_destroyed',['assets/audio/enemy_destroyed.wav',]);
         game.load.audio('enemy_hit',['assets/audio/enemy_hit.wav',]);
         game.load.audio('player_hit',['assets/audio/player_hit.wav',]);
-        
+
         //
         game.load.audio('MonstA',['assets/audio/MonstA.ogg',]);
         game.load.audio('maracas',['assets/audio/maracas.ogg',]);
         game.load.audio('shuffle',['assets/audio/shuffle.ogg',]);
         game.load.audio('draw',['assets/audio/draw.ogg',]);
-        
-       
-        
-        
-        
+
+
+
+
+
     },
     create : function(){
         game.global.bgm = game.add.audio("MonstA");
