@@ -224,7 +224,6 @@ var gameState = {
       if(nbDead > 0){
           for(var i = 0, l = nbDead; i < l; ++i){
             if(this.deadEnnemies.children[i].alive === true){
-              console.log("ici")
               this.deadEnnemies.children[i].angle += 8;
               this.deadEnnemies.children[i].y += this.deadEnnemies.children[i].speedY;
               this.deadEnnemies.children[i].speedY += 0.1;
@@ -408,7 +407,6 @@ var gameState = {
     },
 
     explosionDamage : function(explosion, ennemy){
-        console.log("ennemi touchaient");
         ennemy.life -= explosion.damage;
         if(ennemy.life <= 0){
             this.killEnemy(ennemy);
@@ -498,8 +496,6 @@ var gameState = {
         var keys = Object.keys(enemyData);
         for(var i = 0,l = keys.length;i<l;i++){
             if(this.availableEnemies.indexOf(enemyData[keys[i]].id)<0&&enemyData[keys[i]].spawnthreshold<=this.enemiesKilled){
-
-                console.log("added "+enemyData[keys[i]].id);
                 this.availableEnemies.push(enemyData[keys[i]].id);
                 this.totalEnemySpawnChance+=enemyData[keys[i]].spawnchance;
 
