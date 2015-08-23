@@ -24,7 +24,7 @@ var gameState = {
 
         game.physics.startSystem(Phaser.Physics.ARCADE);
         //Ajout du background
-        game.add.sprite(-20,-20,"background");
+        game.add.sprite(-20,-20,"background_game");
         //cards not yet drawn by the player
         this.deck = [];
         this.stock = [];
@@ -37,6 +37,12 @@ var gameState = {
         }
         for(var i=0; i<10;i++){
             this.stock.push(thingsData.rock);
+        }
+        for(var i=0; i<3;i++){
+            this.stock.push(thingsData.eggplant);
+        }
+        for(var i=0; i<3;i++){
+            this.stock.push(thingsData.paperplane);
         }
         for(var i=0; i<10;i++){
             this.stock.push(thingsData.duck);
@@ -307,6 +313,20 @@ var gameState = {
                         }
                         break;
                     }
+                    case "glide" : {
+                        this.projectiles.children[i].x -= this.projectiles.children[i].speedX;
+                        if(this.projectiles.children[i].x<150){
+                            this.projectiles.children[i].angle-=8;
+                            this.projectiles.children[i].y += this.projectiles.children[i].speedY;
+                        }
+                        if(this.projectiles.children[i].y>450){
+
+                           this.projectiles.children[i].kill();
+
+
+                        }
+                        break;
+                    }
 
                 }
 
@@ -366,12 +386,11 @@ var gameState = {
     addLifebar: function(){
         this.lifebar     = game.add.sprite(game.global.gameWidth/2,25,"lifebar");
         this.lifebar.x-=this.lifebar.width/2;
-        this.lifebarFull = game.add.sprite(game.global.gameWidth/2,25,"lifebar_full");
+        this.lifebarFull = game.add.sprite(game.global.gameWidth/2,27,"lifebar_full");
         this.lifebarFull.x-=this.lifebarFull.width/2;
-
-        this.lifespriteFull = game.add.sprite(this.lifebarFull.x+this.lifebarFull.width+10,27,"lifesprite_full");
+        this.lifespriteFull = game.add.sprite(this.lifebarFull.x+this.lifebarFull.width+10,30,"lifesprite_full");
         this.lifespriteFull.anchor.setTo(0.5,0.5);
-        this.lifespriteDead = game.add.sprite(this.lifebarFull.x-10,27,"lifesprite_dead");
+        this.lifespriteDead = game.add.sprite(this.lifebarFull.x-10,30,"lifesprite_dead");
         this.lifespriteDead.anchor.setTo(0.5,0.5);
 
     },
