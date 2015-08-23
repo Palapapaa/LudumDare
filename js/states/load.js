@@ -50,6 +50,8 @@ var loadState = {
         game.load.image('card_cooldown' , 'assets/graphics/card_cooldown.png');
         game.load.image('lifebar' , 'assets/graphics/lifebar.png');
         game.load.image('lifebar_full' , 'assets/graphics/lifebar_full.png');
+        game.load.image('lifesprite_full' , 'assets/graphics/lifesprite_full.png');
+        game.load.image('lifesprite_dead' , 'assets/graphics/lifesprite_dead.png');
         game.load.image('drawbar' , 'assets/graphics/drawbar.png');
         game.load.image('drawbar_full' , 'assets/graphics/drawbar_full.png');
         game.load.image('background' , 'assets/graphics/background_game.png');

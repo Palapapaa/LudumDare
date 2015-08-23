@@ -35,13 +35,13 @@ var gameState = {
         for(var i=0; i<2;i++){
             this.stock.push(thingsData.caddie_TNT);
         }
-        for(var i=0; i<10;i++){
+        for(var i=0; i<11;i++){
             this.stock.push(thingsData.rock);
         }
         for(var i=0; i<10;i++){
             this.stock.push(thingsData.duck);
         }
-        for(var i=0; i<2;i++){
+        for(var i=0; i<3;i++){
             this.stock.push(thingsData.molotov);
         }
         // cards currently visible on the GUI the player can use
@@ -106,7 +106,7 @@ var gameState = {
             game.time.events.add(i*500, this.drawCards, this, 1);
         }
         //default card that is always available but has a cooldown
-        this.defaultCard = {"thing" : thingsData.rock, "cooldown": 180, "timer" : 0};
+        this.defaultCard = {"thing" : thingsData.rock, "cooldown": 360, "timer" : 0};
 
         this.defaultCard.template = this.game.add.sprite(100, 495, 'card_template_default');
         this.defaultCard.icon = this.game.add.sprite(100 + 32, 532, 'icon_'+this.defaultCard.thing.id);
@@ -115,7 +115,7 @@ var gameState = {
         this.defaultCard.trajectory.anchor.setTo(0.5, 0.5);
         this.defaultCard.damage = this.game.add.text(116, 587, this.defaultCard.thing.damage,{"fontSize": 18});
         this.defaultCard.damage.anchor.setTo(0.5, 0.5);
-        this.defaultCard.cooldownSprite = this.game.add.sprite(100, 595, 'card_cooldown');
+        this.defaultCard.cooldownSprite = this.game.add.sprite(104, 590, 'card_cooldown');
         this.defaultCard.cooldownSprite.scale.setTo(1,0);
         this.defaultCard.cooldownSprite.alpha=0.8;
         this.defaultCard.overlay = this.game.add.sprite(100, 495, 'card_overlay');
@@ -340,6 +340,10 @@ var gameState = {
         this.lifebar.x-=this.lifebar.width/2;
         this.lifebarFull = game.add.sprite(game.global.gameWidth/2,25,"lifebar_full");
         this.lifebarFull.x-=this.lifebarFull.width/2;
+        this.lifesprite_full = game.add.sprite(this.lifebar.x+this.lifebar.width,this.lifebar.y+5,"lifesprite_full");
+        this.lifesprite_full.anchor.setTo(0.5,0.5);
+        this.lifesprite_dead = game.add.sprite(this.lifebar.x,this.lifebar.y+5,"lifesprite_dead");
+        this.lifesprite_dead.anchor.setTo(0.5,0.5);
 
     },
 

@@ -49,8 +49,8 @@ var enemyData = {
     },
     "support" : {
         "id" : "support",
-        "health" : 3,
-        "speed" : 0.3,
+        "health" : 4,
+        "speed" : 0.35,
         "pattern" : "support",
         "damage" : 0,
         "cooldown" : 1, //Temps en secondes

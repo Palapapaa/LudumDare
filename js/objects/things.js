@@ -7,12 +7,12 @@ var thingsData = {
         "cooldown" : 120,
         "speed" : {"x" : 3, "y" : 4.5},
         "properties" : ["piercing",],
-        "offset" : {"x" : -10, "y" : 130},
+        "offset" : {"x" : 10, "y" : 150},
 
     },
     'caddie' : {
         "id" : "caddie",
-        "damage" : 2,
+        "damage" : 1,
         "trajectory" : "groundstraight",
         "cost" : 0,
         "speed" : {"x" : 4, "y" : 0},
@@ -27,7 +27,7 @@ var thingsData = {
         "cost" : 0,
         "speed" : {"x" : 3, "y" : 6},
         "properties" : ["fire","rare","explosive"],
-        "offset" : {"x" : 0, "y" : 80},
+        "offset" : {"x" : 20, "y" : 80},
 
     },
     'duck' : {
@@ -37,7 +37,7 @@ var thingsData = {
         "cost" : 0,
         "speed" : {"x" : 1.5, "y" : 4.5},
         "properties" : ["bounce"],
-        "offset" : {"x" : 10, "y" : 80},
+        "offset" : {"x" : 20, "y" : 80},
 
     },
     'caddie_TNT' : {
