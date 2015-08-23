@@ -35,13 +35,13 @@ var gameState = {
         for(var i=0; i<2;i++){
             this.stock.push(thingsData.caddie_TNT);
         }
-        for(var i=0; i<11;i++){
+        for(var i=0; i<10;i++){
             this.stock.push(thingsData.rock);
         }
         for(var i=0; i<10;i++){
             this.stock.push(thingsData.duck);
         }
-        for(var i=0; i<3;i++){
+        for(var i=0; i<2;i++){
             this.stock.push(thingsData.molotov);
         }
         // cards currently visible on the GUI the player can use
@@ -106,7 +106,7 @@ var gameState = {
             game.time.events.add(i*500, this.drawCards, this, 1);
         }
         //default card that is always available but has a cooldown
-        this.defaultCard = {"thing" : thingsData.rock, "cooldown": 360, "timer" : 0};
+        this.defaultCard = {"thing" : thingsData.rock, "cooldown": 180, "timer" : 0};
 
         this.defaultCard.template = this.game.add.sprite(100, 495, 'card_template_default');
         this.defaultCard.icon = this.game.add.sprite(100 + 32, 532, 'icon_'+this.defaultCard.thing.id);
@@ -115,7 +115,7 @@ var gameState = {
         this.defaultCard.trajectory.anchor.setTo(0.5, 0.5);
         this.defaultCard.damage = this.game.add.text(116, 587, this.defaultCard.thing.damage,{"fontSize": 18});
         this.defaultCard.damage.anchor.setTo(0.5, 0.5);
-        this.defaultCard.cooldownSprite = this.game.add.sprite(104, 590, 'card_cooldown');
+        this.defaultCard.cooldownSprite = this.game.add.sprite(100, 595, 'card_cooldown');
         this.defaultCard.cooldownSprite.scale.setTo(1,0);
         this.defaultCard.cooldownSprite.alpha=0.8;
         this.defaultCard.overlay = this.game.add.sprite(100, 495, 'card_overlay');
@@ -197,144 +197,142 @@ var gameState = {
         this.emitterFire.gravity = 5;
         this.emitterFire.makeParticles('particle_fire');
 
-        this.gameStopped = false;
-
 
 
     },
 
     update : function(){
-      if(this.gameStopped === false){
-        //mise à jour des ennemis
-        var nbEnnemies = this.ennemies.children.length;
-        var gotBoostNextFrame = false;
-        if(nbEnnemies > 0){
-            for(var i = 0, l = nbEnnemies; i < l; ++i){
-              if(this.ennemies.children[i].alive === true){
-                if(this.ennemies.children[i].body.velocity.y >  0 && this.ennemies.children[i].y > 200){
-                  this.ennemies.children[i].body.velocity.y = 0;
+
+      //mise à jour des ennemis
+      var nbEnnemies = this.ennemies.children.length;
+      var gotBoostNextFrame = false;
+      if(nbEnnemies > 0){
+          for(var i = 0, l = nbEnnemies; i < l; ++i){
+            if(this.ennemies.children[i].alive === true){
+              if(this.ennemies.children[i].body.velocity.y >  0 && this.ennemies.children[i].y > 200){
+                this.ennemies.children[i].body.velocity.y = 0;
+              }
+
+              if(this.ennemies.children[i].x > (585 -  this.ennemies.children[i].range)){
+                this.ennemies.children[i].animations.play('attack');
+                this.ennemies.children[i].body.velocity.x = 0;
+                if(this.ennemies.children[i].attackCooldown > 0)
+                  this.ennemies.children[i].attackCooldown--;
+                else{
+                  this.ennemyAttackMonster(this.ennemies.children[i].damage);
+                  this.ennemies.children[i].attackCooldown = 60;
                 }
 
-                if(this.ennemies.children[i].x > (585 -  this.ennemies.children[i].range)){
-                  this.ennemies.children[i].animations.play('attack');
-                  this.ennemies.children[i].body.velocity.x = 0;
-                  if(this.ennemies.children[i].attackCooldown > 0)
-                    this.ennemies.children[i].attackCooldown--;
-                  else{
-                    this.ennemyAttackMonster(this.ennemies.children[i].damage);
-                    this.ennemies.children[i].attackCooldown = 60;
-                  }
-
-                  if(this.ennemies.children[i].type === "support"){
-                    gotBoostNextFrame = true;
-                  }
-                }else{
-                  this.ennemies.children[i].body.velocity.x = this.ennemies.children[i].initialSpeed;
-                  if(this.enemiesGotSpeedBoost === true){
-                    this.ennemies.children[i].x+=1;
-                  }
+                if(this.ennemies.children[i].type === "support"){
+                  gotBoostNextFrame = true;
                 }
-
-
-              }
-            }
-            game.physics.arcade.overlap(this.projectiles, this.ennemies, this.damageEnnemy, null, this);
-            game.physics.arcade.overlap(this.explosions, this.ennemies, this.explosionDamage, null, this);
-        }
-        this.enemiesGotSpeedBoost = gotBoostNextFrame;
-          if(gotBoostNextFrame){
-              if(!this.gameSounds.maracas.isPlaying){
-                  this.gameSounds.maracas.play("",0,0.5,true);
-              }
-          }else{
-              if(this.gameSounds.maracas.isPlaying){
-                  this.gameSounds.maracas.stop();
-              }
-          }
-
-        var nbDead = this.deadEnnemies.children.length;
-        if(nbDead > 0){
-            for(var i = 0, l = nbDead; i < l; ++i){
-              if(this.deadEnnemies.children[i].alive === true){
-                this.deadEnnemies.children[i].angle += 8;
-                this.deadEnnemies.children[i].y += this.deadEnnemies.children[i].speedY;
-                this.deadEnnemies.children[i].speedY += 0.1;
-
-              }
-            }
-        }
-        //update projectiles according to their trajectory
-        var nbProjectiles = this.projectiles.children.length;
-        if(nbProjectiles  > 0){
-          for(var i = 0, l = nbProjectiles; i < l; ++i){
-              if(this.projectiles.children[i].alive){
-                  switch(this.projectiles.children[i].trajectory){
-                      case "lob" : {
-                          this.projectiles.children[i].angle-=10;
-                          this.projectiles.children[i].x -= this.projectiles.children[i].speedX;
-                          this.projectiles.children[i].y -= this.projectiles.children[i].speedY;
-                          this.projectiles.children[i].speedY -= 0.1;
-                          if(this.projectiles.children[i].y>450){
-                              if(this.projectiles.children[i].properties.indexOf('explosive') > -1){
-                                  this.addExplosion(this.projectiles.children[i].x,this.projectiles.children[i].y,this.projectiles.children[i].damage,this.projectiles.children[i].properties);
-                                  this.projectiles.children[i].kill();
-                              }else if(this.projectiles.children[i].properties.indexOf('bounce') > -1){
-                                  this.projectiles.children[i].speedY=Math.abs(this.projectiles.children[i].speedY);
-                                  this.projectiles.children[i].y=450;
-                                  this.gameSounds[this.projectiles.children[i].type].play();
-                              }else{
-                                  this.projectiles.children[i].kill();
-                              }
-
-                          }
-                          break;
-                      }
-                      case "groundstraight" : {
-                          this.projectiles.children[i].x -= this.projectiles.children[i].speedX;
-                          if(this.projectiles.children[i].x<-50){
-                              this.projectiles.children[i].kill();
-                          }
-                          break;
-                      }
-
-                  }
-
-              }
-          }
-
-        }
-          //destruction des calques d'explosion encore actifs
-            var nbExplosions = this.explosions.children.length;
-            if(nbExplosions > 0){
-                for(var i = 0, l = nbExplosions; i < l; ++i){
-                  if(this.explosions.children[i].alive === true){
-                      this.explosions.children[i].kill();
-                  }
-                }
-            }
-
-          if(this.shuffling){
-              this.shuffleTimer -=this.shuffleEvent.timer.elapsed;
-              this.drawBarFull.scale.setTo(1,-this.shuffleTimer/this.shuffleCooldown);
-          }else{
-              if(this.deck.length===0&&this.hand.length===0){
-                  this.shuffling=true;
-                  this.shuffleEvent = game.time.events.add(this.shuffleCooldown, this.initDeck, this);
-                  this.shuffleTimer = this.shuffleCooldown;
               }else{
-                  this.drawTimer -=this.autoDraw.timer.elapsed;
-                  this.drawBarFull.scale.setTo(1,-this.drawTimer/this.drawCooldown);
+                this.ennemies.children[i].body.velocity.x = this.ennemies.children[i].initialSpeed;
+                if(this.enemiesGotSpeedBoost === true){
+                  this.ennemies.children[i].x+=1;
+                }
+              }
+
+
+            }
+          }
+          game.physics.arcade.overlap(this.projectiles, this.ennemies, this.damageEnnemy, null, this);
+          game.physics.arcade.overlap(this.explosions, this.ennemies, this.explosionDamage, null, this);
+      }
+      this.enemiesGotSpeedBoost = gotBoostNextFrame;
+        if(gotBoostNextFrame){
+            if(!this.gameSounds.maracas.isPlaying){
+                this.gameSounds.maracas.play("",0,0.5,true);
+            }
+        }else{
+            if(this.gameSounds.maracas.isPlaying){
+                this.gameSounds.maracas.stop();
+            }
+        }
+
+      var nbDead = this.deadEnnemies.children.length;
+      if(nbDead > 0){
+          for(var i = 0, l = nbDead; i < l; ++i){
+            if(this.deadEnnemies.children[i].alive === true){
+              this.deadEnnemies.children[i].angle += 8;
+              this.deadEnnemies.children[i].y += this.deadEnnemies.children[i].speedY;
+              this.deadEnnemies.children[i].speedY += 0.1;
+
+            }
+          }
+      }
+      //update projectiles according to their trajectory
+      var nbProjectiles = this.projectiles.children.length;
+      if(nbProjectiles  > 0){
+        for(var i = 0, l = nbProjectiles; i < l; ++i){
+            if(this.projectiles.children[i].alive){
+                switch(this.projectiles.children[i].trajectory){
+                    case "lob" : {
+                        this.projectiles.children[i].angle-=10;
+                        this.projectiles.children[i].x -= this.projectiles.children[i].speedX;
+                        this.projectiles.children[i].y -= this.projectiles.children[i].speedY;
+                        this.projectiles.children[i].speedY -= 0.1;
+                        if(this.projectiles.children[i].y>450){
+                            if(this.projectiles.children[i].properties.indexOf('explosive') > -1){
+                                this.addExplosion(this.projectiles.children[i].x,this.projectiles.children[i].y,this.projectiles.children[i].damage,this.projectiles.children[i].properties);
+                                this.projectiles.children[i].kill();
+                            }else if(this.projectiles.children[i].properties.indexOf('bounce') > -1){
+                                this.projectiles.children[i].speedY=Math.abs(this.projectiles.children[i].speedY);
+                                this.projectiles.children[i].y=450;
+                                this.gameSounds[this.projectiles.children[i].type].play();
+                            }else{
+                                this.projectiles.children[i].kill();
+                            }
+
+                        }
+                        break;
+                    }
+                    case "groundstraight" : {
+                        this.projectiles.children[i].x -= this.projectiles.children[i].speedX;
+                        if(this.projectiles.children[i].x<-50){
+                            this.projectiles.children[i].kill();
+                        }
+                        break;
+                    }
+
+                }
+
+            }
+        }
+
+      }
+        //destruction des calques d'explosion encore actifs
+          var nbExplosions = this.explosions.children.length;
+          if(nbExplosions > 0){
+              for(var i = 0, l = nbExplosions; i < l; ++i){
+                if(this.explosions.children[i].alive === true){
+                    this.explosions.children[i].kill();
+                }
               }
           }
 
-
-
-          if(this.defaultCard.timer>=0){
-              this.defaultCard.timer--;
-              this.defaultCard.cooldownSprite.scale.setTo(1,-this.defaultCard.timer/this.defaultCard.cooldown);
-          }
-
+        if(this.shuffling){
+            this.shuffleTimer -=this.shuffleEvent.timer.elapsed;
+            this.drawBarFull.scale.setTo(1,-this.shuffleTimer/this.shuffleCooldown);
+        }else{
+            if(this.deck.length===0&&this.hand.length===0){
+                this.shuffling=true;
+                this.shuffleEvent = game.time.events.add(this.shuffleCooldown, this.initDeck, this);
+                this.shuffleTimer = this.shuffleCooldown;
+            }else{
+                this.drawTimer -=this.autoDraw.timer.elapsed;
+                this.drawBarFull.scale.setTo(1,-this.drawTimer/this.drawCooldown);
+            }
         }
+
+
+
+        if(this.defaultCard.timer>=0){
+            this.defaultCard.timer--;
+            this.defaultCard.cooldownSprite.scale.setTo(1,-this.defaultCard.timer/this.defaultCard.cooldown);
+        }
+
+
 
     },
 
@@ -343,10 +341,6 @@ var gameState = {
         this.lifebar.x-=this.lifebar.width/2;
         this.lifebarFull = game.add.sprite(game.global.gameWidth/2,25,"lifebar_full");
         this.lifebarFull.x-=this.lifebarFull.width/2;
-        this.lifesprite_full = game.add.sprite(this.lifebar.x+this.lifebar.width,this.lifebar.y+5,"lifesprite_full");
-        this.lifesprite_full.anchor.setTo(0.5,0.5);
-        this.lifesprite_dead = game.add.sprite(this.lifebar.x,this.lifebar.y+5,"lifesprite_dead");
-        this.lifesprite_dead.anchor.setTo(0.5,0.5);
 
     },
 
@@ -380,7 +374,6 @@ var gameState = {
               case "armored":
               case "support":
               case "dark":
-              case "archer":
               case "base": spawnY=this.randomGenerator.integerInRange(350,400); break;
               case "flying_base": spawnY=this.randomGenerator.integerInRange(50,150); break;
           }
@@ -721,16 +714,7 @@ var gameState = {
           this.monster.life -= damage;
           if(this.monster.life < 0){
             this.monster.kill();
-
-            this.gameStopped = true;
-            var nbEnnemies = this.ennemies.children.length;
-            if(nbEnnemies > 0){
-                for(var i = 0, l = nbEnnemies; i < l; ++i){
-                  this.ennemies.children[i].body.velocity.y = 0;
-                  this.ennemies.children[i].body.velocity.x = 0;
-                }
-            }
-            game.state.start('gameover', false, false, this.score);
+            game.state.start('gameover', true, false, this.score);
           }
           this.lifebarFull.scale.setTo(this.monster.life / 100, 1);
           //console.log(damage);
