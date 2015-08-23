@@ -204,7 +204,7 @@ var gameState = {
     },
 
     update : function(){
-      if(this.gameStopped){
+      if(this.gameStopped === false){
         //mise à jour des ennemis
         var nbEnnemies = this.ennemies.children.length;
         var gotBoostNextFrame = false;
@@ -334,7 +334,7 @@ var gameState = {
               this.defaultCard.cooldownSprite.scale.setTo(1,-this.defaultCard.timer/this.defaultCard.cooldown);
           }
 
-      }
+        }
 
     },
 
@@ -721,7 +721,15 @@ var gameState = {
           this.monster.life -= damage;
           if(this.monster.life < 0){
             this.monster.kill();
+
             this.gameStopped = true;
+            var nbEnnemies = this.ennemies.children.length;
+            if(nbEnnemies > 0){
+                for(var i = 0, l = nbEnnemies; i < l; ++i){
+                  this.ennemies.children[i].body.velocity.y = 0;
+                  this.ennemies.children[i].body.velocity.x = 0;
+                }
+            }
             game.state.start('gameover', false, false, this.score);
           }
           this.lifebarFull.scale.setTo(this.monster.life / 100, 1);
