@@ -23,7 +23,7 @@ var gameoverState = {
         var score = game.add.text(game.world.centerX, 300, 'Score : ' + this.score,
         { font: 'bold 64px Arial', fill: '#ffffff' });
         score.anchor.setTo(0.5, 0.5);
-        var screenTitle = game.add.text(game.world.centerX, 480, 'Cliquez ! Cliquez banque de salope, recommencez à jouer !',
+        var screenTitle = game.add.text(game.world.centerX, 480, 'Click to try again !',
         { font: 'bold 32px Arial', fill: '#ffffff' });
         screenTitle.anchor.setTo(0.5, 0.5);
 
