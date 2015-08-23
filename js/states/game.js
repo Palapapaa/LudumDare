@@ -276,7 +276,7 @@ var gameState = {
             if(this.deadEnnemies.children[i].alive === true){
               this.deadEnnemies.children[i].angle += 8;
               this.deadEnnemies.children[i].y += this.deadEnnemies.children[i].speedY;
-              this.deadEnnemies.children[i].speedY += 0.01;
+              this.deadEnnemies.children[i].speedY += 0.1;
             }
           }
       }
