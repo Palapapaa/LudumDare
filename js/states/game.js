@@ -92,17 +92,17 @@ var gameState = {
         game.physics.enable(this.deadEnnemies, Phaser.Physics.ARCADE);
         this.drawCooldown=4500;
         this.drawTimer=this.drawCooldown;
-        
+
         this.shuffling = false;
         this.shuffleCooldown=6000;
         this.shuffleTimer=this.shuffleCooldown;
         this.shuffleEvent = null;
-        
+
         this.autoDraw = game.time.events.loop(this.drawCooldown, this.drawCards, this,1);
 
         this.initDeck();
         //draw more cards at the beginning
-        for(var i =3;i<5;i++){            
+        for(var i =3;i<5;i++){
             game.time.events.add(i*500, this.drawCards, this, 1);
         }
         //default card that is always available but has a cooldown
@@ -230,6 +230,8 @@ var gameState = {
                 if(this.enemiesGotSpeedBoost === true){
                   this.ennemies.children[i].x+=1;
                 }
+              }else{
+                this.ennemies.children[i].body.velocity.x = this.ennemies.children[i].initialSpeed;
               }
 
 
@@ -309,14 +311,14 @@ var gameState = {
                 }
               }
           }
-        
+
         if(this.shuffling){
             this.shuffleTimer -=this.shuffleEvent.timer.elapsed;
             this.drawBarFull.scale.setTo(1,-this.shuffleTimer/this.shuffleCooldown);
         }else{
             if(this.deck.length===0&&this.hand.length===0){
                 this.shuffling=true;
-                this.shuffleEvent = game.time.events.add(this.shuffleCooldown, this.initDeck, this); 
+                this.shuffleEvent = game.time.events.add(this.shuffleCooldown, this.initDeck, this);
                 this.shuffleTimer = this.shuffleCooldown;
             }else{
                 this.drawTimer -=this.autoDraw.timer.elapsed;
@@ -324,13 +326,13 @@ var gameState = {
             }
         }
 
-        
-        
+
+
         if(this.defaultCard.timer>=0){
             this.defaultCard.timer--;
             this.defaultCard.cooldownSprite.scale.setTo(1,-this.defaultCard.timer/this.defaultCard.cooldown);
         }
-        
+
 
 
     },
@@ -382,6 +384,7 @@ var gameState = {
 
         ennemy.range = ennemyData['range'];
         ennemy.body.velocity.x = ennemyData['speed'] * 60;
+        ennemy.initialSpeed = ennemyData['speed'] * 60;
         if(ennemyData['pattern'] === "flying"){
           ennemy.body.velocity.y = ennemyData['speed'] * 30;
 
@@ -586,7 +589,7 @@ var gameState = {
 
         this.deck = this.shuffleArray(this.deck);
 
-        this.resetHand();for(var i =0;i<3;i++){            
+        this.resetHand();for(var i =0;i<3;i++){
             game.time.events.add(i*500, this.drawCards, this, 1);
         }
         this.gameSounds.shuffle.play();
@@ -595,9 +598,9 @@ var gameState = {
         game.time.events.remove(this.autoDraw);
         this.autoDraw = game.time.events.loop(this.drawCooldown, this.drawCards, this,1);
 
- 
 
- 
+
+
     },
 
     shuffleArray : function(o){
@@ -642,7 +645,7 @@ var gameState = {
 
             for(var i=0; i<howMany;i++){
                 if(this.hand.length<5){
-                    
+
                     var card = this.deck.shift();
                     this.deckBack.frame = Math.min(3,this.deck.length);
                     this.deckDisplay.text=this.deck.length+" / "+this.stock.length;
@@ -663,7 +666,7 @@ var gameState = {
                 }
             }
         }
-        
+
     },
 
     addCardToHand : function(cardObj,handIndex){
