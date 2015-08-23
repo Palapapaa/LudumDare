@@ -16,7 +16,7 @@ var thingsData = {
         "trajectory" : "groundstraight",
         "cost" : 0,
         "speed" : 4,
-        "properties" : ["piercing","rare","knockback"],
+        "properties" : ["piercing","knockback"],
         "offset" : {"x" : -10, "y" : 200},
 
     },

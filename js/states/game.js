@@ -40,6 +40,7 @@ var gameState = {
         this.availableEnemies = ["base"];
         this.totalEnemySpawnChance = enemyData.base.spawnchance;
         this.enemiesKilled = 0;
+        this.enemiesGotSpeedBoost = false;
 
          //Sons
         this.gameSounds = {};
@@ -125,6 +126,7 @@ var gameState = {
 
         //TODO Parametrer dans le niveau l'interval d'apparition des ennelus
         this.loopEnnemies = game.time.events.loop(2250, this.addEnnemy, this);
+
         
         //dot sur le feu
         this.loopFireDot = game.time.events.loop(1750, this.fireDot, this);
@@ -146,7 +148,7 @@ var gameState = {
         this.emitterFire.maxParticleScale = 1.6;
         this.emitterFire.gravity = 5;
         this.emitterFire.makeParticles('particle_fire');
-        
+
 
 
     },
@@ -154,9 +156,14 @@ var gameState = {
     update : function(){
       //mise à jour des ennemis
       var nbEnnemies = this.ennemies.children.length;
+      var gotBoostNextFrame = false;
       if(nbEnnemies > 0){
           for(var i = 0, l = nbEnnemies; i < l; ++i){
             if(this.ennemies.children[i].alive === true){
+              if(this.ennemies.children[i].body.velocity.y >  0 && this.ennemies.children[i].y > 250){
+                this.ennemies.children[i].body.velocity.y = 0;
+              }
+
               if(this.ennemies.children[i].x > (585 -  this.ennemies.children[i].range)){
                 this.ennemies.children[i].body.velocity.x = 0;
                 if(this.ennemies.children[i].attackCooldown > 0)
@@ -164,6 +171,14 @@ var gameState = {
                 else{
                   this.ennemyAttackMonster(this.ennemies.children[i].damage);
                   this.ennemies.children[i].attackCooldown = 60;
+                }
+
+                if(this.ennemies.children[i].type === "support"){
+                  gotBoostNextFrame = true;
+                }
+              }else{
+                if(this.enemiesGotSpeedBoost === true){
+                  this.ennemies.children[i].x+=1;
                 }
               }
                 
@@ -173,7 +188,8 @@ var gameState = {
           game.physics.arcade.overlap(this.projectiles, this.ennemies, this.damageEnnemy, null, this);          
           game.physics.arcade.overlap(this.explosions, this.ennemies, this.explosionDamage, null, this);
       }
-        //update projectiles according to their trajectory
+      this.enemiesGotSpeedBoost = gotBoostNextFrame;
+      //update projectiles according to their trajectory
       var nbProjectiles = this.projectiles.children.length;
       if(nbProjectiles  > 0){
         for(var i = 0, l = nbProjectiles; i < l; ++i){
@@ -203,8 +219,6 @@ var gameState = {
                 }
 
             }
-
-
         }
 
       }
@@ -258,19 +272,23 @@ var gameState = {
        ennemy.animations.add('move', [0,1], 12, true);
        ennemy.animations.play('move');
 
-
           var spawnY;
           switch(type){
               case "armored":
+              case "support": spawnY=this.randomGenerator.integerInRange(350,400); break;
               case "base": spawnY=this.randomGenerator.integerInRange(350,400); break;
-
+              case "flying_base": spawnY=this.randomGenerator.integerInRange(100,200); break;
           }
 
-
+        ennemy.type = type;
         ennemy.reset(0 , spawnY);
 
         ennemy.range = ennemyData['range'];
         ennemy.body.velocity.x = ennemyData['speed'] * 60;
+        if(ennemyData['pattern'] === "flying"){
+          ennemy.body.velocity.y = ennemyData['speed'] * 30;
+
+        }
       }
     },
 
