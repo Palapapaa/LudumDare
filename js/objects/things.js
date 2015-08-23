@@ -35,7 +35,7 @@ var thingsData = {
         "damage" : 1,
         "trajectory" : "lob",
         "cost" : 0,
-        "speed" : {"x" : 1.5, "y" : 4.5},
+        "speed" : {"x" : 2, "y" : 3.5},
         "properties" : ["bounce"],
         "offset" : {"x" : 20, "y" : 80},
 
