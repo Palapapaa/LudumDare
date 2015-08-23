@@ -69,10 +69,10 @@ var gameState = {
         this.gameSounds.player_hit = game.add.audio("player_hit");
         this.gameSounds.enemy_destroyed = game.add.audio("enemy_destroyed");
         this.gameSounds.draw_rare = game.add.audio("draw_rare");
-        
+
         this.gameSounds.maracas = game.add.audio("maracas");
         //this.gameSounds.maracas.play("",0,0.5,true);
-        
+
 
         this.deckBack = game.add.sprite(650, 490, 'deck_back');
         this.deckBack.frame =3;
@@ -128,6 +128,7 @@ var gameState = {
         this.monster.life = 100;
         this.monster.enableBody = true;
         this.monster.animations.add('idle', [0,1], 3, true);
+        this.monster.animations.add('attack', [2,3], 3, false);
         this.monster.animations.play('idle');
 
 
@@ -202,6 +203,7 @@ var gameState = {
               }
 
               if(this.ennemies.children[i].x > (585 -  this.ennemies.children[i].range)){
+                this.ennemies.children[i].animations.play('attack');
                 this.ennemies.children[i].body.velocity.x = 0;
                 if(this.ennemies.children[i].attackCooldown > 0)
                   this.ennemies.children[i].attackCooldown--;
@@ -228,12 +230,12 @@ var gameState = {
       this.enemiesGotSpeedBoost = gotBoostNextFrame;
         if(gotBoostNextFrame){
             if(!this.gameSounds.maracas.isPlaying){
-                this.gameSounds.maracas.play("",0,0.5,true);                 
-            }           
+                this.gameSounds.maracas.play("",0,0.5,true);
+            }
         }else{
             if(this.gameSounds.maracas.isPlaying){
-                this.gameSounds.maracas.stop();                 
-            } 
+                this.gameSounds.maracas.stop();
+            }
         }
 
       var nbDead = this.deadEnnemies.children.length;
@@ -269,7 +271,7 @@ var gameState = {
                             }else{
                                 this.projectiles.children[i].kill();
                             }
-                            
+
                         }
                         break;
                     }
@@ -337,6 +339,7 @@ var gameState = {
         ennemy.tint="0xffffff";
         ennemy.onFire=0;
         ennemy.animations.add('move', [0,1], 12, true);
+        ennemy.animations.add('attack', [2,3], 2, true);
         ennemy.animations.play('move');
 
           var spawnY;
@@ -384,6 +387,11 @@ var gameState = {
         projectile.anchor.setTo(0.5, 0.5);
         projectile.loadTexture("sprite_"+type);
         projectile.reset(x, y);
+
+        this.monster.animations.play('attack');
+        this.monster.events.onAnimationComplete.add(function(){
+          this.monster.animations.play('idle');
+        }, this);
       }
     },
 
@@ -479,18 +487,18 @@ var gameState = {
         ennemy.life -= projectile.damage;
         //Si le projectile n'est pas perforant
         if(projectile.properties.indexOf('piercing') === -1 && projectile.properties.indexOf('bounce') === -1){
-            if(projectile.properties.indexOf('explosive') > -1){     
+            if(projectile.properties.indexOf('explosive') > -1){
                 this.addExplosion(ennemy.x+ennemy.width/2,ennemy.y+ennemy.height/2,projectile.damage,projectile.properties);
             }
             projectile.kill();
 
         }
-        
+
         if(projectile.properties.indexOf('bounce') > -1){
             projectile.speedY  = Math.abs(projectile.speedY);
             this.gameSounds[projectile.type].play();
         }
-          
+
         if(ennemy.life <= 0){
             this.killEnemy(ennemy);
 
