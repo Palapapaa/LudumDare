@@ -69,12 +69,12 @@ var gameState = {
 
         this.deckBack = game.add.sprite(650, 490, 'deck_back');
         this.deckBack.frame =3;
-        
+
         this.drawBar = this.game.add.sprite(725, 490, 'drawbar');
         this.drawBarFull = this.game.add.sprite(726, 596, 'drawbar_full');
         this.drawBarFull.scale.setTo(1,-1);
         this.deckDisplay = game.add.text(740, 490,"",{"fill" : "#CACACA","fontSize": 18});
-        
+
         //Ennemis decedaient
         this.deadEnnemies = game.add.group();
         this.deadEnnemies.createMultiple(25, "enemy_base");
@@ -106,8 +106,8 @@ var gameState = {
         this.defaultCard.overlay.defaultCard=true;
         this.defaultCard.overlay.events.onInputDown.add(this.cardOnClick,this);
 
-        
-        
+
+
 
         this.randomGenerator = new Phaser.RandomDataGenerator(1337);
 
@@ -122,9 +122,9 @@ var gameState = {
         this.monster.enableBody = true;
         this.monster.animations.add('idle', [0,1], 3, true);
         this.monster.animations.play('idle');
-        
-        
-        
+
+
+
 
         //Ajout du container de lifebar
         this.addLifebar();
@@ -159,7 +159,7 @@ var gameState = {
 
         //dot sur le feu
         this.loopFireDot = game.time.events.loop(1000, this.fireDot, this);
-        
+
         //Particules explosions
         this.emitterExplosion = game.add.emitter(0, 0 , 180);
         this.emitterExplosion.setXSpeed(-150, 150);
@@ -183,7 +183,7 @@ var gameState = {
     },
 
     update : function(){
-        
+
       //mise à jour des ennemis
       var nbEnnemies = this.ennemies.children.length;
       var gotBoostNextFrame = false;
@@ -224,6 +224,7 @@ var gameState = {
       if(nbDead > 0){
           for(var i = 0, l = nbDead; i < l; ++i){
             if(this.deadEnnemies.children[i].alive === true){
+              console.log("ici")
               this.deadEnnemies.children[i].angle += 8;
               this.deadEnnemies.children[i].y += this.deadEnnemies.children[i].speedY;
               this.deadEnnemies.children[i].speedY += 0.1;
@@ -385,11 +386,11 @@ var gameState = {
           var nbEnnemies = this.ennemies.children.length;
           if(nbEnnemies > 0){
               for(var i = 0, l = nbEnnemies; i < l; ++i){
-                if(this.ennemies.children[i].alive === true){                  
+                if(this.ennemies.children[i].alive === true){
                     if(this.ennemies.children[i].onFire>0){
                         this.emitterFire.x=this.ennemies.children[i].x+this.ennemies.children[i].width/2;
                         this.emitterFire.y=this.ennemies.children[i].y;
-                        this.emitterFire.start(true, 1750, null, 1); 
+                        this.emitterFire.start(true, 1750, null, 1);
                         this.ennemies.children[i].life-=0.5;
                         if(this.ennemies.children[i].life <= 0){
                             this.killEnemy(this.ennemies.children[i]);
@@ -397,7 +398,7 @@ var gameState = {
                         }
                         this.ennemies.children[i].onFire--;
                         if(this.ennemies.children[i].onFire<=0){
-                            this.ennemies.children[i].tint="0xffffff";   
+                            this.ennemies.children[i].tint="0xffffff";
                         }
                     }
 
@@ -434,8 +435,8 @@ var gameState = {
           dead.loadTexture("enemy_"+ennemy.type);
           dead.angle = 0;
           dead.speedY = -2;
-          ennemy.checkWorldBounds = true;
-          ennemy.outOfBoundsKill = true;
+          dead.checkWorldBounds = true;
+          dead.outOfBoundsKill = true;
           dead.reset( ennemy.x, ennemy.y + (ennemy.width/2))
         }
 
@@ -457,7 +458,7 @@ var gameState = {
         ennemy.life -= projectile.damage;
         //Si le projectile n'est pas perforant
         if(projectile.properties.indexOf('piercing') === -1){
-            if(projectile.properties.indexOf('explosive') > -1){            
+            if(projectile.properties.indexOf('explosive') > -1){
                 this.addExplosion(ennemy.x+ennemy.width/2,ennemy.y+ennemy.height/2,projectile.damage,projectile.properties);
             }
             projectile.kill();
@@ -568,14 +569,14 @@ var gameState = {
         this.drawTimer=this.drawCooldown;
         if(!howMany)howMany=1;
         console.log("trying to draw "+howMany+" card(s)...");
-        
-                
+
+
         for(var i=0; i<howMany;i++){
             if(this.hand.length<5){
-                
-                       
+
+
                 var card = this.deck.shift();
-                this.deckBack.frame = Math.min(3,this.deck.length); 
+                this.deckBack.frame = Math.min(3,this.deck.length);
                 this.deckDisplay.text=this.deck.length+" / "+this.stock.length;
                 if(typeof(card) !== "undefined"){
                     console.log("drawing card...");
@@ -586,7 +587,7 @@ var gameState = {
                     cardObj=this.addCardToHand(cardObj,this.hand.length);
                     this.hand.push(cardObj);
                 }
-                
+
             }
         }
     },
