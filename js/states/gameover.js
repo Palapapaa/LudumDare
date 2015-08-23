@@ -15,11 +15,11 @@ var gameoverState = {
 
 
         // Affichage du fond
-        var background = game.stage.backgroundColor = '#199BC4';
+        game.add.sprite(0,0,"background_gameover");
 
-        var goTitle = game.add.text(game.world.centerX, 120, 'GAME OVER',
+       /* var goTitle = game.add.text(game.world.centerX, 120, 'GAME OVER',
         { font: 'bold 64px Arial', fill: '#ffffff' });
-        goTitle.anchor.setTo(0.5, 0.5);
+        goTitle.anchor.setTo(0.5, 0.5);*/
         var score = game.add.text(game.world.centerX, 300, 'Score : ' + this.score,
         { font: 'bold 64px Arial', fill: '#ffffff' });
         score.anchor.setTo(0.5, 0.5);
