@@ -35,10 +35,10 @@ var gameState = {
         for(var i=0; i<2;i++){
             this.stock.push(thingsData.caddie_TNT);
         }
-        for(var i=0; i<12;i++){
+        for(var i=0; i<10;i++){
             this.stock.push(thingsData.rock);
         }
-        for(var i=0; i<12;i++){
+        for(var i=0; i<10;i++){
             this.stock.push(thingsData.duck);
         }
         for(var i=0; i<2;i++){
@@ -69,6 +69,8 @@ var gameState = {
         this.gameSounds.player_hit = game.add.audio("player_hit");
         this.gameSounds.enemy_destroyed = game.add.audio("enemy_destroyed");
         this.gameSounds.draw_rare = game.add.audio("draw_rare");
+        this.gameSounds.draw = game.add.audio("draw");
+        this.gameSounds.shuffle = game.add.audio("shuffle");
 
         this.gameSounds.maracas = game.add.audio("maracas");
         //this.gameSounds.maracas.play("",0,0.5,true);
@@ -80,7 +82,7 @@ var gameState = {
         this.drawBar = this.game.add.sprite(725, 490, 'drawbar');
         this.drawBarFull = this.game.add.sprite(726, 596, 'drawbar_full');
         this.drawBarFull.scale.setTo(1,-1);
-        this.deckDisplay = game.add.text(740, 490,"",{"fill" : "#CACACA","fontSize": 18});
+        this.deckDisplay = game.add.text(740, 490,"",{"fill" : "#CACACA","fontSize": 17});
 
         //Ennemis decedaient
         this.deadEnnemies = game.add.group();
@@ -88,12 +90,21 @@ var gameState = {
         this.deadEnnemies.setAll('anchor.x', 0.5);
         this.deadEnnemies.setAll('anchor.y', 0.5);
         game.physics.enable(this.deadEnnemies, Phaser.Physics.ARCADE);
-        this.drawCooldown=5000;
+        this.drawCooldown=4500;
         this.drawTimer=this.drawCooldown;
+        
+        this.shuffling = false;
+        this.shuffleCooldown=6000;
+        this.shuffleTimer=this.shuffleCooldown;
+        this.shuffleEvent = null;
+        
         this.autoDraw = game.time.events.loop(this.drawCooldown, this.drawCards, this,1);
 
         this.initDeck();
-
+        //draw more cards at the beginning
+        for(var i =3;i<5;i++){            
+            game.time.events.add(i*500, this.drawCards, this, 1);
+        }
         //default card that is always available but has a cooldown
         this.defaultCard = {"thing" : thingsData.rock, "cooldown": 180, "timer" : 0};
 
@@ -198,7 +209,7 @@ var gameState = {
       if(nbEnnemies > 0){
           for(var i = 0, l = nbEnnemies; i < l; ++i){
             if(this.ennemies.children[i].alive === true){
-              if(this.ennemies.children[i].body.velocity.y >  0 && this.ennemies.children[i].y > 250){
+              if(this.ennemies.children[i].body.velocity.y >  0 && this.ennemies.children[i].y > 200){
                 this.ennemies.children[i].body.velocity.y = 0;
               }
 
@@ -290,21 +301,36 @@ var gameState = {
 
       }
         //destruction des calques d'explosion encore actifs
-      var nbExplosions = this.explosions.children.length;
-      if(nbExplosions > 0){
-          for(var i = 0, l = nbExplosions; i < l; ++i){
-            if(this.explosions.children[i].alive === true){
-                this.explosions.children[i].kill();
-            }
+          var nbExplosions = this.explosions.children.length;
+          if(nbExplosions > 0){
+              for(var i = 0, l = nbExplosions; i < l; ++i){
+                if(this.explosions.children[i].alive === true){
+                    this.explosions.children[i].kill();
+                }
+              }
           }
-      }
+        
+        if(this.shuffling){
+            this.shuffleTimer -=this.shuffleEvent.timer.elapsed;
+            this.drawBarFull.scale.setTo(1,-this.shuffleTimer/this.shuffleCooldown);
+        }else{
+            if(this.deck.length===0&&this.hand.length===0){
+                this.shuffling=true;
+                this.shuffleEvent = game.time.events.add(this.shuffleCooldown, this.initDeck, this); 
+                this.shuffleTimer = this.shuffleCooldown;
+            }else{
+                this.drawTimer -=this.autoDraw.timer.elapsed;
+                this.drawBarFull.scale.setTo(1,-this.drawTimer/this.drawCooldown);
+            }
+        }
 
+        
+        
         if(this.defaultCard.timer>=0){
             this.defaultCard.timer--;
             this.defaultCard.cooldownSprite.scale.setTo(1,-this.defaultCard.timer/this.defaultCard.cooldown);
         }
-        this.drawTimer -=this.autoDraw.timer.elapsed;
-        this.drawBarFull.scale.setTo(1,-this.drawTimer/this.drawCooldown);
+        
 
 
     },
@@ -348,7 +374,7 @@ var gameState = {
               case "support":
               case "dark":
               case "base": spawnY=this.randomGenerator.integerInRange(350,400); break;
-              case "flying_base": spawnY=this.randomGenerator.integerInRange(100,200); break;
+              case "flying_base": spawnY=this.randomGenerator.integerInRange(50,150); break;
           }
 
         ennemy.type = type;
@@ -560,8 +586,18 @@ var gameState = {
 
         this.deck = this.shuffleArray(this.deck);
 
-        this.resetHand();
-        this.drawCards(5);
+        this.resetHand();for(var i =0;i<3;i++){            
+            game.time.events.add(i*500, this.drawCards, this, 1);
+        }
+        this.gameSounds.shuffle.play();
+        this.shuffling=false;
+        this.shuffleEvent=null;
+        game.time.events.remove(this.autoDraw);
+        this.autoDraw = game.time.events.loop(this.drawCooldown, this.drawCards, this,1);
+
+ 
+
+ 
     },
 
     shuffleArray : function(o){
@@ -599,30 +635,35 @@ var gameState = {
     },
 
     drawCards : function(howMany){
-        this.drawTimer=this.drawCooldown;
-        if(!howMany)howMany=1;
-        console.log("trying to draw "+howMany+" card(s)...");
+        if(!this.shuffling){
+            this.drawTimer=this.drawCooldown;
+            if(!howMany)howMany=1;
+            console.log("trying to draw "+howMany+" card(s)...");
 
-
-        for(var i=0; i<howMany;i++){
-            if(this.hand.length<5){
-
-
-                var card = this.deck.shift();
-                this.deckBack.frame = Math.min(3,this.deck.length);
-                this.deckDisplay.text=this.deck.length+" / "+this.stock.length;
-                if(typeof(card) !== "undefined"){
-                    console.log("drawing card...");
-                    if(card.properties.indexOf("rare")>-1){
-                        this.gameSounds.draw_rare.play();
+            for(var i=0; i<howMany;i++){
+                if(this.hand.length<5){
+                    
+                    var card = this.deck.shift();
+                    this.deckBack.frame = Math.min(3,this.deck.length);
+                    this.deckDisplay.text=this.deck.length+" / "+this.stock.length;
+                    if(typeof(card) !== "undefined"){
+                        console.log("drawing card...");
+                        if(card.properties.indexOf("rare")>-1){
+                            this.gameSounds.draw_rare.play();
+                        }else{
+                            this.gameSounds.draw.play();
+                        }
+                        var cardObj = {"thing":card};
+                        cardObj=this.addCardToHand(cardObj,this.hand.length);
+                        this.hand.push(cardObj);
                     }
-                    var cardObj = {"thing":card};
-                    cardObj=this.addCardToHand(cardObj,this.hand.length);
-                    this.hand.push(cardObj);
-                }
 
+
+
+                }
             }
         }
+        
     },
 
     addCardToHand : function(cardObj,handIndex){

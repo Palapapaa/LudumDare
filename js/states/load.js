@@ -31,7 +31,12 @@ var loadState = {
         var keys = Object.keys(enemyData);
         for(var i = 0,l = keys.length;i<l;i++){
             //game.load.image();
-            game.load.spritesheet('enemy_'+keys[i] , 'assets/graphics/enemy_'+keys[i]+'.png', 65, 100,4);
+            if(keys[i]==="flying_base"){                
+                game.load.spritesheet('enemy_'+keys[i] , 'assets/graphics/enemy_'+keys[i]+'.png', 65, 150,4);
+            }else{
+                game.load.spritesheet('enemy_'+keys[i] , 'assets/graphics/enemy_'+keys[i]+'.png', 65, 100,4);
+                    
+            }
 
         }
         // Chargement des images;
@@ -61,6 +66,8 @@ var loadState = {
         //
         game.load.audio('MonstA',['assets/audio/MonstA.ogg',]);
         game.load.audio('maracas',['assets/audio/maracas.ogg',]);
+        game.load.audio('shuffle',['assets/audio/shuffle.ogg',]);
+        game.load.audio('draw',['assets/audio/draw.ogg',]);
         
        
         
