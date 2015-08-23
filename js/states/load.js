@@ -61,6 +61,7 @@ var loadState = {
         
         //
         game.load.audio('MonstA',['assets/audio/MonstA.ogg',]);
+        game.load.audio('maracas',['assets/audio/maracas.ogg',]);
         
        
         

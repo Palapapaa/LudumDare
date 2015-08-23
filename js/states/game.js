@@ -38,6 +38,9 @@ var gameState = {
         for(var i=0; i<12;i++){
             this.stock.push(thingsData.rock);
         }
+        for(var i=0; i<12;i++){
+            this.stock.push(thingsData.duck);
+        }
         for(var i=0; i<2;i++){
             this.stock.push(thingsData.molotov);
         }
@@ -66,6 +69,10 @@ var gameState = {
         this.gameSounds.player_hit = game.add.audio("player_hit");
         this.gameSounds.enemy_destroyed = game.add.audio("enemy_destroyed");
         this.gameSounds.draw_rare = game.add.audio("draw_rare");
+        
+        this.gameSounds.maracas = game.add.audio("maracas");
+        //this.gameSounds.maracas.play("",0,0.5,true);
+        
 
         this.deckBack = game.add.sprite(650, 490, 'deck_back');
         this.deckBack.frame =3;
@@ -219,6 +226,15 @@ var gameState = {
           game.physics.arcade.overlap(this.explosions, this.ennemies, this.explosionDamage, null, this);
       }
       this.enemiesGotSpeedBoost = gotBoostNextFrame;
+        if(gotBoostNextFrame){
+            if(!this.gameSounds.maracas.isPlaying){
+                this.gameSounds.maracas.play("",0,0.5,true);                 
+            }           
+        }else{
+            if(this.gameSounds.maracas.isPlaying){
+                this.gameSounds.maracas.stop();                 
+            } 
+        }
 
       var nbDead = this.deadEnnemies.children.length;
       if(nbDead > 0){
@@ -245,8 +261,15 @@ var gameState = {
                         if(this.projectiles.children[i].y>450){
                             if(this.projectiles.children[i].properties.indexOf('explosive') > -1){
                                 this.addExplosion(this.projectiles.children[i].x,this.projectiles.children[i].y,this.projectiles.children[i].damage,this.projectiles.children[i].properties);
+                                this.projectiles.children[i].kill();
+                            }else if(this.projectiles.children[i].properties.indexOf('bounce') > -1){
+                                this.projectiles.children[i].speedY=Math.abs(this.projectiles.children[i].speedY);
+                                this.projectiles.children[i].y=450;
+                                this.gameSounds[this.projectiles.children[i].type].play();
+                            }else{
+                                this.projectiles.children[i].kill();
                             }
-                            this.projectiles.children[i].kill();
+                            
                         }
                         break;
                     }
@@ -319,7 +342,8 @@ var gameState = {
           var spawnY;
           switch(type){
               case "armored":
-              case "support": spawnY=this.randomGenerator.integerInRange(350,400); break;
+              case "support":
+              case "dark":
               case "base": spawnY=this.randomGenerator.integerInRange(350,400); break;
               case "flying_base": spawnY=this.randomGenerator.integerInRange(100,200); break;
           }
@@ -349,10 +373,9 @@ var gameState = {
         projectile.damage = projectileData.damage;
         projectile.properties = projectileData.properties;
         projectile.trajectory=projectileData.trajectory;
-        projectile.speedX = projectileData.speed;
-          if(projectileData.trajectory==="lob"){
-              projectile.speedY = projectileData.speed*1.5;
-          }
+        projectile.speedX = projectileData.speed.x;
+        projectile.speedY = projectileData.speed.y;
+        projectile.type=type;
 
         projectile.projectileId = this.nextProjectileId;
         this.nextProjectileId++;
@@ -456,13 +479,19 @@ var gameState = {
 
         ennemy.life -= projectile.damage;
         //Si le projectile n'est pas perforant
-        if(projectile.properties.indexOf('piercing') === -1){
+        if(projectile.properties.indexOf('piercing') === -1 && projectile.properties.indexOf('bounce') === -1){
             if(projectile.properties.indexOf('explosive') > -1){            
                 this.addExplosion(ennemy.x+ennemy.width/2,ennemy.y+ennemy.height/2,projectile.damage,projectile.properties);
             }
             projectile.kill();
 
         }
+        
+        if(projectile.properties.indexOf('bounce') > -1){
+            projectile.speedY  = Math.abs(projectile.speedY);
+            this.gameSounds[projectile.type].play();
+        }
+          
         if(ennemy.life <= 0){
             this.killEnemy(ennemy);
 

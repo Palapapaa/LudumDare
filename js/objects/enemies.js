@@ -13,14 +13,26 @@ var enemyData = {
     },
     "armored" : {
         "id" : "armored",
-        "health" : 4,
-        "speed" : 0.45,
+        "health" : 3,
+        "speed" : 0.5,
         "pattern" : "walking",
         "damage" : 2,
         "cooldown" : 1, //Temps en secondes
         "range" : 10,
         "score" : 25,
         "spawnthreshold" : 10,
+        "spawnchance" : 5,
+    },
+    "dark" : {
+        "id" : "dark",
+        "health" : 4,
+        "speed" : 0.4,
+        "pattern" : "walking",
+        "damage" : 5,
+        "cooldown" : 1, //Temps en secondes
+        "range" : 10,
+        "score" : 50,
+        "spawnthreshold" : 25,
         "spawnchance" : 5,
     },
     "flying_base" : {
@@ -37,7 +49,7 @@ var enemyData = {
     },
     "support" : {
         "id" : "support",
-        "health" : 5,
+        "health" : 3,
         "speed" : 0.3,
         "pattern" : "support",
         "damage" : 0,
