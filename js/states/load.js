@@ -37,6 +37,7 @@ var loadState = {
         // Chargement des images;
     //    game.load.image('monster' , 'assets/graphics/monster.png');
         game.load.spritesheet('monster' , 'assets/graphics/monster_idle.png', 128, 220, 2);
+        game.load.spritesheet('deck_back' , 'assets/graphics/card_back.png', 70, 107, 4);
 
         game.load.image('card_template' , 'assets/graphics/card_template.png');
         game.load.image('card_template_default' , 'assets/graphics/card_template_default.png');
@@ -45,6 +46,8 @@ var loadState = {
         game.load.image('card_cooldown' , 'assets/graphics/card_cooldown.png');
         game.load.image('lifebar' , 'assets/graphics/lifebar.png');
         game.load.image('lifebar_full' , 'assets/graphics/lifebar_full.png');
+        game.load.image('drawbar' , 'assets/graphics/drawbar.png');
+        game.load.image('drawbar_full' , 'assets/graphics/drawbar_full.png');
         game.load.image('background' , 'assets/graphics/background_game.png');
         
         game.load.image('particle_fire' , 'assets/graphics/particle_fire.png');
