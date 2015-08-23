@@ -227,11 +227,10 @@ var gameState = {
                   gotBoostNextFrame = true;
                 }
               }else{
+                this.ennemies.children[i].body.velocity.x = this.ennemies.children[i].initialSpeed;
                 if(this.enemiesGotSpeedBoost === true){
                   this.ennemies.children[i].x+=1;
                 }
-              }else{
-                this.ennemies.children[i].body.velocity.x = this.ennemies.children[i].initialSpeed;
               }
 
 
