@@ -55,8 +55,10 @@ var loadState = {
         game.load.image('drawbar_full' , 'assets/graphics/drawbar_full.png');
         game.load.image('arrow' , 'assets/graphics/sprite_arrow.png');
         game.load.image('background_game' , 'assets/graphics/background_game.png');
+        game.load.image('shadowmap_game' , 'assets/graphics/shadowmap_game.png');
         game.load.image('background_gameover' , 'assets/graphics/background_gameover.png');
         game.load.image('particle_fire' , 'assets/graphics/particle_fire.png');
+        game.load.image('particle_damage' , 'assets/graphics/particle_damage.png');
         game.load.image('explosion_overlay' , 'assets/graphics/explosion_overlay.png');
 
         // Chargement des sons

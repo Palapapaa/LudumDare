@@ -54,9 +54,7 @@ var gameState = {
         this.hand = [];
         this.handSprites = [];
 
-        //score display
-        this.score = 0;
-        this.scoreDisplay = game.add.text(20,20,"Score : 00000000",{"fill" : "#CACACA"});
+        
 
 
         this.availableEnemies = ["base"];
@@ -82,14 +80,6 @@ var gameState = {
         //this.gameSounds.maracas.play("",0,0.5,true);
 
 
-        this.deckBack = game.add.sprite(650, 490, 'deck_back');
-        this.deckBack.frame =3;
-
-        this.drawBar = this.game.add.sprite(725, 490, 'drawbar');
-        this.drawBarFull = this.game.add.sprite(726, 596, 'drawbar_full');
-        this.drawBarFull.scale.setTo(1,-1);
-        this.deckDisplay = game.add.text(740, 490,"",{"fill" : "#CACACA","fontSize": 17});
-
         //Ennemis decedaient
         this.deadEnnemies = game.add.group();
         this.deadEnnemies.createMultiple(25, "enemy_base");
@@ -99,39 +89,7 @@ var gameState = {
         this.drawCooldown=4500;
         this.drawTimer=this.drawCooldown;
 
-        this.shuffling = false;
-        this.shuffleCooldown=6000;
-        this.shuffleTimer=this.shuffleCooldown;
-        this.shuffleEvent = null;
-
-        this.autoDraw = game.time.events.loop(this.drawCooldown, this.drawCards, this,1);
-
-        this.initDeck();
-        //draw more cards at the beginning
-        for(var i =3;i<5;i++){
-            game.time.events.add(i*500, this.drawCards, this, 1);
-        }
-        //default card that is always available but has a cooldown
-        this.defaultCard = {"thing" : thingsData.rock, "cooldown": 360, "timer" : 0};
-
-        this.defaultCard.template = this.game.add.sprite(100, 495, 'card_template_default');
-        this.defaultCard.icon = this.game.add.sprite(100 + 32, 532, 'icon_'+this.defaultCard.thing.id);
-        this.defaultCard.icon.anchor.setTo(0.5, 0.5);
-        this.defaultCard.trajectory = this.game.add.sprite(148, 585, 'trajectory_'+this.defaultCard.thing.trajectory);
-        this.defaultCard.trajectory.anchor.setTo(0.5, 0.5);
-        this.defaultCard.damage = this.game.add.text(116, 587, this.defaultCard.thing.damage,{"fontSize": 18});
-        this.defaultCard.damage.anchor.setTo(0.5, 0.5);
-        this.defaultCard.cooldownSprite = this.game.add.sprite(104, 590, 'card_cooldown');
-        this.defaultCard.cooldownSprite.scale.setTo(1,0);
-        this.defaultCard.cooldownSprite.alpha=0.8;
-        this.defaultCard.overlay = this.game.add.sprite(100, 495, 'card_overlay');
-        this.defaultCard.overlay.inputEnabled=true;
-        this.defaultCard.overlay.thing=this.defaultCard.thing;
-        this.defaultCard.overlay.defaultCard=true;
-        this.defaultCard.overlay.events.onInputDown.add(this.cardOnClick,this);
-
-
-
+         
 
         this.randomGenerator = new Phaser.RandomDataGenerator(1337);
 
@@ -145,7 +103,7 @@ var gameState = {
         this.monster.life = 100;
         this.monster.enableBody = true;
         this.monster.animations.add('idle', [0,1], 3, true);
-        this.monster.animations.add('attack', [2,3], 3, false);
+        this.monster.animations.add('attack', [2,3], 4, false);
         this.monster.animations.play('idle');
         game.physics.enable(this.monster, Phaser.Physics.ARCADE);
 
@@ -155,9 +113,8 @@ var gameState = {
         game.physics.enable(this.arrows, Phaser.Physics.ARCADE);
         game.physics.arcade.collide(this.arrows,this.monster);
 
-
-        //Ajout du container de lifebar
-        this.addLifebar();
+        
+        
 
         // Groupe ennemi
         this.ennemies    = game.add.group();
@@ -199,6 +156,15 @@ var gameState = {
         this.emitterExplosion.gravity = 5;
         this.emitterExplosion.makeParticles('particle_fire');
 
+        //Particules damage
+        this.emitterDamage = game.add.emitter(0, 0 , 180);
+        this.emitterDamage.setXSpeed(-150, 150);
+        this.emitterDamage.setYSpeed(-150, 150);
+        this.emitterDamage.minParticleScale = 0.6;
+        this.emitterDamage.maxParticleScale = 0.8;
+        this.emitterDamage.gravity = 0;
+        this.emitterDamage.makeParticles('particle_damage');
+
         //Particules feu
         this.emitterFire = game.add.emitter(0, 0 , 30);
         this.emitterFire.setXSpeed(0, 0);
@@ -208,7 +174,61 @@ var gameState = {
         this.emitterFire.gravity = 5;
         this.emitterFire.makeParticles('particle_fire');
 
+        //shadows for the scene
+        this.shadowmap = game.add.sprite(-20,-20,"shadowmap_game");
+        this.shadowmap.blendMode = PIXI.blendModes.MULTIPLY;
+        
+        //score display
+        this.score = 0;
+        this.scoreDisplay = game.add.text(20,20,"SCORE : 00000000",{"fill" : "#CACACA","fontSize" : 24});
+        
+        
+        //Ajout du container de lifebar
+        this.addLifebar();
+        
+        
+        this.deckBack = game.add.sprite(650, 490, 'deck_back');
+        this.deckBack.frame =3;
 
+        this.drawBar = this.game.add.sprite(725, 490, 'drawbar');
+        this.drawBarFull = this.game.add.sprite(726, 596, 'drawbar_full');
+        this.drawBarFull.scale.setTo(1,-1);
+        this.deckDisplay = game.add.text(740, 490,"",{"fill" : "#CACACA","fontSize": 17});
+
+        
+        this.shuffling = false;
+        this.shuffleCooldown=6000;
+        this.shuffleTimer=this.shuffleCooldown;
+        this.shuffleEvent = null;
+
+        this.autoDraw = game.time.events.loop(this.drawCooldown, this.drawCards, this,1);
+
+        this.initDeck();
+        //draw more cards at the beginning
+        for(var i =3;i<5;i++){
+            game.time.events.add(i*500, this.drawCards, this, 1);
+        }
+        
+
+        //default card that is always available but has a cooldown
+        this.defaultCard = {"thing" : thingsData.rock, "cooldown": 360, "timer" : 0};
+
+        this.defaultCard.template = this.game.add.sprite(100, 495, 'card_template_default');
+        this.defaultCard.icon = this.game.add.sprite(100 + 32, 532, 'icon_'+this.defaultCard.thing.id);
+        this.defaultCard.icon.anchor.setTo(0.5, 0.5);
+        this.defaultCard.trajectory = this.game.add.sprite(148, 585, 'trajectory_'+this.defaultCard.thing.trajectory);
+        this.defaultCard.trajectory.anchor.setTo(0.5, 0.5);
+        this.defaultCard.damage = this.game.add.text(116, 587, this.defaultCard.thing.damage,{"fontSize": 18});
+        this.defaultCard.damage.anchor.setTo(0.5, 0.5);
+        this.defaultCard.cooldownSprite = this.game.add.sprite(104, 590, 'card_cooldown');
+        this.defaultCard.cooldownSprite.scale.setTo(1,0);
+        this.defaultCard.cooldownSprite.alpha=0.8;
+        this.defaultCard.overlay = this.game.add.sprite(100, 495, 'card_overlay');
+        this.defaultCard.overlay.inputEnabled=true;
+        this.defaultCard.overlay.thing=this.defaultCard.thing;
+        this.defaultCard.overlay.defaultCard=true;
+        this.defaultCard.overlay.events.onInputDown.add(this.cardOnClick,this);
+        
 
     },
 
@@ -562,8 +582,7 @@ var gameState = {
     damageEnnemy: function(projectile, ennemy) {
       //Si l'ennemi ne s'est pas pris de dégat par ce projectile
       if(ennemy.damageBy.indexOf(projectile.projectileId) === -1){
-        ennemy.damageBy.push(projectile.projectileId);
-
+        ennemy.damageBy.push(projectile.projectileId);          
         ennemy.life -= projectile.damage;
         //Si le projectile n'est pas perforant
         if(projectile.properties.indexOf('piercing') === -1 && projectile.properties.indexOf('bounce') === -1){
@@ -584,6 +603,9 @@ var gameState = {
 
         }else{
             this.gameSounds.enemy_hit.play();
+            this.emitterDamage.x=ennemy.x+ennemy.width/2;
+            this.emitterDamage.y=ennemy.y+ennemy.height/2;
+            this.emitterDamage.start(true, 400, null, 30);
             if(projectile.properties.indexOf('knockback') > -1){
 
                 game.add.tween(ennemy).to({"x" : ennemy.x-75}).easing(Phaser.Easing.Exponential.Out).start();
@@ -605,7 +627,7 @@ var gameState = {
         while(scoreString.length<8){
             scoreString="0"+scoreString;
         }
-        this.scoreDisplay.text="Score : "+scoreString;
+        this.scoreDisplay.text="SCORE : "+scoreString;
 
     },
     updateAvailableEnemies : function(){
@@ -766,6 +788,9 @@ var gameState = {
           this.monster.life -= damage;
           if(this.monster.life < 0){
             this.monster.kill();
+            if(this.gameSounds.maracas.isPlaying){
+                this.gameSounds.maracas.stop();
+            }
             game.state.start('gameover', true, false, this.score);
           }
           this.lifebarFull.scale.setTo(this.monster.life / 100, 1);
