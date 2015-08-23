@@ -31,12 +31,11 @@ var loadState = {
         var keys = Object.keys(enemyData);
         for(var i = 0,l = keys.length;i<l;i++){
             //game.load.image();
-            game.load.spritesheet('enemy_'+keys[i] , 'assets/graphics/enemy_'+keys[i]+'_move.png', 65, 100,2);
+            game.load.spritesheet('enemy_'+keys[i] , 'assets/graphics/enemy_'+keys[i]+'.png', 65, 100,4);
 
         }
         // Chargement des images;
-    //    game.load.image('monster' , 'assets/graphics/monster.png');
-        game.load.spritesheet('monster' , 'assets/graphics/monster_idle.png', 128, 220, 2);
+        game.load.spritesheet('monster' , 'assets/graphics/monster.png', 128, 220, 4);
         game.load.spritesheet('deck_back' , 'assets/graphics/card_back.png', 70, 107, 4);
 
         game.load.image('card_template' , 'assets/graphics/card_template.png');
