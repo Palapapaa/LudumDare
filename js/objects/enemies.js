@@ -31,21 +31,21 @@ var enemyData = {
         "damage" : 2,
         "cooldown" : 1, //Temps en secondes
         "range" : 10,
-        "score" : 25,
-        "spawnthreshold" : 10,
+        "score" : 20,
+        "spawnthreshold" : 15,
         "spawnchance" : 3,
     },
     "support" : {
         "id" : "support",
-        "health" : 3,
+        "health" : 5,
         "speed" : 0.3,
         "pattern" : "support",
         "damage" : 0,
         "cooldown" : 1, //Temps en secondes
-        "range" : 100,
-        "score" : 25,
-        "spawnthreshold" : 10,
-        "spawnchance" : 3,
+        "range" : 150,
+        "score" : 50,
+        "spawnthreshold" : 20,
+        "spawnchance" : 1,
     },
 
 };

@@ -22,12 +22,25 @@ var gameState = {
 
     create : function(){
 
-
         game.physics.startSystem(Phaser.Physics.ARCADE);
         //Ajout du background
         game.add.sprite(-20,-20,"background");
         //cards not yet drawn by the player
         this.deck = [];
+        this.stock = [];
+        //stock initial de cartes
+        for(var i=0; i<6;i++){
+            this.stock.push(thingsData.caddie);
+        }
+        for(var i=0; i<2;i++){
+            this.stock.push(thingsData.caddie_TNT);
+        }
+        for(var i=0; i<12;i++){
+            this.stock.push(thingsData.rock);
+        }
+        for(var i=0; i<2;i++){
+            this.stock.push(thingsData.molotov);
+        }
         // cards currently visible on the GUI the player can use
         this.hand = [];
         this.handSprites = [];
@@ -461,17 +474,9 @@ var gameState = {
     },
 
     initDeck : function(){
-        this.deck=[];
+        this.deck=JSON.parse(JSON.stringify(this.stock));
 
-        for(var i=0; i<6;i++){
-            this.deck.push(thingsData.caddie);
-        }
-        for(var i=0; i<12;i++){
-            this.deck.push(thingsData.rock);
-        }
-        for(var i=0; i<2;i++){
-            this.deck.push(thingsData.molotov);
-        }
+        
 
         this.deck = this.shuffleArray(this.deck);
 

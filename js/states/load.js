@@ -55,8 +55,18 @@ var loadState = {
         game.load.audio('enemy_destroyed',['assets/audio/enemy_destroyed.wav',]);
         game.load.audio('enemy_hit',['assets/audio/enemy_hit.wav',]);
         game.load.audio('player_hit',['assets/audio/player_hit.wav',]);
+        
+        //
+        game.load.audio('MonstA',['assets/audio/MonstA.ogg',]);
+        
+       
+        
+        
+        
     },
     create : function(){
+        game.global.bgm = game.add.audio("MonstA");
+        game.global.bgm.play("",0,0.3,true);
         // On démarre l'état du menu
         game.state.start('game');
     },
