@@ -29,7 +29,7 @@ var gameState = {
         this.deck = [];
         this.stock = [];
         //stock initial de cartes
-        for(var i=0; i<6;i++){
+        for(var i=0; i<4;i++){
             this.stock.push(thingsData.caddie);
         }
         for(var i=0; i<2;i++){
@@ -41,7 +41,7 @@ var gameState = {
         for(var i=0; i<3;i++){
             this.stock.push(thingsData.eggplant);
         }
-        for(var i=0; i<3;i++){
+        for(var i=0; i<5;i++){
             this.stock.push(thingsData.paperplane);
         }
         for(var i=0; i<10;i++){

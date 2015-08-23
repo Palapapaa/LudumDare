@@ -3,9 +3,8 @@ var loadState = {
     preload : function(){
         console.log("Load state preload");
 
-        // Affichage de l'image de fond
-        var background = game.stage.backgroundColor = '#199BC4';
-
+        // Affichage du fond
+        game.add.sprite(0,0,"background_load");
 
         // Affichage de la progress bar
         //This is the bright blue bar that is hidden by the dark bar

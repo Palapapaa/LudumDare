@@ -18,7 +18,7 @@ var thingsData = {
         "cooldown" : 120,
         "speed" : {"x" : 1, "y" : 7.5},
         "properties" : ["rare","knockback","piercing"],
-        "offset" : {"x" : 10, "y" : 150},
+        "offset" : {"x" : 10, "y" : 130},
 
     },
     'caddie' : {
