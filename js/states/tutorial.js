@@ -24,10 +24,10 @@ var tutorialState = {
         { font: 'bold 28px Arial', fill: '#888888' });
         
         var credits = game.add.text(game.global.gameWidth - 230, 10, 'Made for Ludum Dare 33\nTheme : "You are the monster"\n    Code : Vladirien & Palapapaa\n    Graphics : Lysero\n    Music : Nemix',
-        { font: 'bold 14px Arial', fill: '#888888' });
+        { font: '14px Arial', fill: '#888888' });
         
         this.indic1 = game.add.text(game.global.gameWidth - 270, 200, 'You are the monster!',
-        { font: 'bold 19px Arial', fill: '#ffffff' });
+        { font: '18px Arial', fill: '#ffffff' });
         this.indic2 = game.add.text(game.global.gameWidth - 240, 10, '',
         { font: 'bold 18px Arial', fill: '#ffffff' });
         
