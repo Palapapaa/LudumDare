@@ -22,6 +22,10 @@ var gameoverState = {
         goTitle.anchor.setTo(0.5, 0.5);*/
         var score = game.add.text(game.world.centerX, 300, 'FINAL SCORE : ' + this.score,
         { font: 'bold 64px Arial', fill: '#ffffff' });
+        
+        var credits = game.add.text(10, 500, 'Code : Vladirien & Palapapaa\nGraphics : Lysero\nMusic : Nemix',
+        { font: 'bold 18px Arial', fill: '#ffffff' });
+        
         score.anchor.setTo(0.5, 0.5);
         
         this.clickable=false;

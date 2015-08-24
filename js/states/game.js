@@ -324,6 +324,7 @@ var gameState = {
                         this.projectiles.children[i].speedY -= 0.1;
                         if(this.projectiles.children[i].y>450){
                             if(this.projectiles.children[i].properties.indexOf('explosive') > -1){
+                                this.gameSounds.enemy_destroyed.play();
                                 this.addExplosion(this.projectiles.children[i].x,this.projectiles.children[i].y,this.projectiles.children[i].damage,this.projectiles.children[i].properties);
                                 this.projectiles.children[i].kill();
                             }else if(this.projectiles.children[i].properties.indexOf('bounce') > -1){
@@ -394,7 +395,8 @@ var gameState = {
             this.shuffleTimer -=this.shuffleEvent.timer.elapsed;
             this.drawBarFull.scale.setTo(1,-this.shuffleTimer/this.shuffleCooldown);
         }else{
-            if(this.deck.length===0&&this.hand.length===0){
+            //if(this.deck.length===0&&this.hand.length===0){
+            if(this.deck.length===0){
                 this.shuffling=true;
                 this.shuffleEvent = game.time.events.add(this.shuffleCooldown, this.initDeck, this);
                 this.shuffleTimer = this.shuffleCooldown;
@@ -459,8 +461,10 @@ var gameState = {
               case "armored":
               case "support":
               case "dark":
+              case "fast":
               case "archer":
               case "base": spawnY=this.randomGenerator.integerInRange(350,400); break;
+              case "flying_dark":
               case "flying_base": spawnY=this.randomGenerator.integerInRange(50,150); break;
           }
 

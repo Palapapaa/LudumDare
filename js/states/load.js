@@ -30,7 +30,7 @@ var loadState = {
         var keys = Object.keys(enemyData);
         for(var i = 0,l = keys.length;i<l;i++){
             //game.load.image();
-            if(keys[i]==="flying_base"){
+            if(keys[i]==="flying_base"||keys[i]==="flying_dark"){
                 game.load.spritesheet('enemy_'+keys[i] , 'assets/graphics/enemy_'+keys[i]+'.png', 65, 150,4);
             }else{
                 game.load.spritesheet('enemy_'+keys[i] , 'assets/graphics/enemy_'+keys[i]+'.png', 65, 100,4);
