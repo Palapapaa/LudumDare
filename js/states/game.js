@@ -914,6 +914,7 @@ var gameState = {
         game.time.events.add(3000, this.destroyCard, this,cardObj);
         
         this.stock.push(thing);        
+        this.deck.push(thing);        
         this.deckDisplay.text=this.deck.length+" / "+this.stock.length;
     },
 

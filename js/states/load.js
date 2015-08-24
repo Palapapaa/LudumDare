@@ -55,6 +55,11 @@ var loadState = {
         game.load.image('drawbar_full_boost' , 'assets/graphics/drawbar_full_boost.png');
         game.load.image('arrow' , 'assets/graphics/sprite_arrow.png');
         game.load.image('background_game' , 'assets/graphics/background_game.png');
+        game.load.image('background_tutorial' , 'assets/graphics/background_tutorial.png');
+        game.load.image('tutorial_step1' , 'assets/graphics/tutorial_step1.png');
+        game.load.image('tutorial_step2' , 'assets/graphics/tutorial_step2.png');
+        game.load.image('tutorial_step3' , 'assets/graphics/tutorial_step3.png');
+        game.load.image('tutorial_step4' , 'assets/graphics/tutorial_step4.png');
         game.load.image('shadowmap_game' , 'assets/graphics/shadowmap_game.png');
         game.load.image('background_gameover' , 'assets/graphics/background_gameover.png');
         game.load.image('particle_fire' , 'assets/graphics/particle_fire.png');
@@ -84,7 +89,7 @@ var loadState = {
         game.global.bgm = game.add.audio("MonstA");
         game.global.bgm.play("",0,0.3,true);
         // On démarre l'état du menu
-        game.state.start('game');
+        game.state.start('tutorial');
     },
 
     update : function(){
