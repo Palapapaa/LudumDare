@@ -47,6 +47,9 @@ var gameState = {
         for(var i=0; i<3;i++){
             this.stock.push(thingsData.duck);
         }
+        for(var i=0; i<0;i++){
+            this.stock.push(thingsData.cochon);
+        }
         for(var i=0; i<1;i++){
             this.stock.push(thingsData.molotov);
         }
@@ -93,6 +96,8 @@ var gameState = {
         this.deadEnnemies.setAll('anchor.y', 0.5);
         game.physics.enable(this.deadEnnemies, Phaser.Physics.ARCADE);
         this.drawCooldown=3000;
+        this.drawBoost=false;
+        this.drawCooldownBoost=1500;
         this.drawTimer=this.drawCooldown;
 
          
@@ -395,15 +400,19 @@ var gameState = {
             this.shuffleTimer -=this.shuffleEvent.timer.elapsed;
             this.drawBarFull.scale.setTo(1,-this.shuffleTimer/this.shuffleCooldown);
         }else{
-            //if(this.deck.length===0&&this.hand.length===0){
-            if(this.deck.length===0){
+            if(this.deck.length===0&&this.hand.length===0){
+            //if(this.deck.length===0){
                 this.shuffling=true;
                 this.shuffleEvent = game.time.events.add(this.shuffleCooldown, this.initDeck, this);
                 this.shuffleTimer = this.shuffleCooldown;
             }else{
                 if(this.deck.length!==0){
                     this.drawTimer -=this.autoDraw.timer.elapsed;
-                    this.drawBarFull.scale.setTo(1,-this.drawTimer/this.drawCooldown);
+                    if(this.drawBoost){                        
+                        this.drawBarFull.scale.setTo(1,-this.drawTimer/this.drawCooldownBoost);
+                    }else{                       
+                        this.drawBarFull.scale.setTo(1,-this.drawTimer/this.drawCooldown); 
+                    }
                 }
                 
             }
@@ -489,27 +498,41 @@ var gameState = {
 
       if(projectile && typeof projectileData !== "undefined"){
 
-        this.gameSounds[type].play();
-        projectile.angle=0;
-        projectile.damage = projectileData.damage;
-        projectile.properties = projectileData.properties;
-        projectile.trajectory=projectileData.trajectory;
-        projectile.speedX = projectileData.speed.x;
-        projectile.speedY = projectileData.speed.y;
-        projectile.type=type;
+            this.gameSounds[type].play();
+            if(projectileData.properties.indexOf("boost")>-1){
+                //boost draw rate
+                if(!this.drawBoost){                    
+                    this.drawBoost=true;
+                    game.time.events.add(7500, this.drawBoostStop, this, 1);
+                    this.drawBarFull.loadTexture("drawbar_full_boost");        
+                    game.time.events.remove(this.autoDraw);
+                    this.drawCards(1,true);
+                    this.autoDraw = game.time.events.loop(this.drawCooldownBoost, this.drawCards, this,1,true);
+                }
+                
+            }else{
+                projectile.angle=0;
+                projectile.damage = projectileData.damage;
+                projectile.properties = projectileData.properties;
+                projectile.trajectory=projectileData.trajectory;
+                projectile.speedX = projectileData.speed.x;
+                projectile.speedY = projectileData.speed.y;
+                projectile.type=type;
 
-        projectile.projectileId = this.nextProjectileId;
-        this.nextProjectileId++;
-        projectile.checkWorldBounds = true;
-        projectile.outOfBoundsKill = true;
-        projectile.anchor.setTo(0.5, 0.5);
-        projectile.loadTexture("sprite_"+type);
-        projectile.reset(x, y);
+                projectile.projectileId = this.nextProjectileId;
+                this.nextProjectileId++;
+                projectile.checkWorldBounds = true;
+                projectile.outOfBoundsKill = true;
+                projectile.anchor.setTo(0.5, 0.5);
+                projectile.loadTexture("sprite_"+type);
+                projectile.reset(x, y);
 
-        this.monster.animations.play('attack');
-        this.monster.events.onAnimationComplete.add(function(){
-          this.monster.animations.play('idle');
-        }, this);
+                this.monster.animations.play('attack');
+                this.monster.events.onAnimationComplete.add(function(){
+                  this.monster.animations.play('idle');
+                }, this);
+            }
+            
       }
     },
 
@@ -706,14 +729,21 @@ var gameState = {
         this.gameSounds.shuffle.play();
         this.shuffling=false;
         this.shuffleEvent=null;
-        game.time.events.remove(this.autoDraw);
-        this.autoDraw = game.time.events.loop(this.drawCooldown, this.drawCards, this,1,true);
+        this.drawBoostStop();
 
 
 
 
     },
-
+    
+    drawBoostStop : function(){
+        this.drawBoost=false;
+        this.drawBarFull.loadTexture("drawbar_full");        
+        game.time.events.remove(this.autoDraw);
+        this.autoDraw = game.time.events.loop(this.drawCooldown, this.drawCards, this,1,true);
+        this.drawTimer=this.drawCooldown;
+    },
+    
     shuffleArray : function(o){
         for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
         return o;
@@ -755,8 +785,12 @@ var gameState = {
 
     drawCards : function(howMany,resetTimer){
         if(!this.shuffling){
-            if(resetTimer){                
-                this.drawTimer=this.drawCooldown;
+            if(resetTimer){   
+                if(this.drawBoost){                   
+                    this.drawTimer=this.drawCooldownBoost;
+               }else{                   
+                    this.drawTimer=this.drawCooldown;
+               }
             }
             if(!howMany)howMany=1;
             console.log("trying to draw "+howMany+" card(s)...");
@@ -845,6 +879,8 @@ var gameState = {
             this.deckDisplay.text=this.deck.length+" / "+this.stock.length;
         }
     },
+    
+    
     
     addCardToStock : function(thing){
         //this.deck.push(thing);

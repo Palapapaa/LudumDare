@@ -23,7 +23,7 @@ var gameoverState = {
         var score = game.add.text(game.world.centerX, 300, 'FINAL SCORE : ' + this.score,
         { font: 'bold 64px Arial', fill: '#ffffff' });
         
-        var credits = game.add.text(10, 500, 'Code : Vladirien & Palapapaa\nGraphics : Lysero\nMusic : Nemix',
+        var credits = game.add.text(10, 465, 'Made for Ludum Dare 33\nTheme : "You are the monster"\n    Code : Vladirien & Palapapaa\n    Graphics : Lysero\n    Music : Nemix',
         { font: 'bold 18px Arial', fill: '#ffffff' });
         
         score.anchor.setTo(0.5, 0.5);
@@ -58,7 +58,7 @@ var gameoverState = {
     },
     
     addTryAgain : function(){
-        var screenTitle = game.add.text(game.world.centerX, 480, 'Click to try again !',
+        var screenTitle = game.add.text(game.world.centerX, 460, 'Click to try again !',
         { font: 'bold 32px Arial', fill: '#ffffff' });
         screenTitle.anchor.setTo(0.5, 0.5);
         this.clickable=true;

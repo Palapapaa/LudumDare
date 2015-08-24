@@ -53,6 +53,7 @@ var loadState = {
         game.load.image('lifesprite_dead' , 'assets/graphics/lifesprite_dead.png');
         game.load.image('drawbar' , 'assets/graphics/drawbar.png');
         game.load.image('drawbar_full' , 'assets/graphics/drawbar_full.png');
+        game.load.image('drawbar_full_boost' , 'assets/graphics/drawbar_full_boost.png');
         game.load.image('arrow' , 'assets/graphics/sprite_arrow.png');
         game.load.image('background_game' , 'assets/graphics/background_game.png');
         game.load.image('shadowmap_game' , 'assets/graphics/shadowmap_game.png');
@@ -63,7 +64,6 @@ var loadState = {
         game.load.image('sprite_discard' , 'assets/graphics/sprite_discard.png');
 
         // Chargement des sons
-        game.load.audio('draw_rare',['assets/audio/draw_rare.wav',]);
         game.load.audio('enemy_destroyed',['assets/audio/enemy_destroyed.wav',]);
         game.load.audio('enemy_hit',['assets/audio/enemy_hit.wav',]);
         game.load.audio('player_hit',['assets/audio/player_hit.wav',]);
@@ -73,7 +73,8 @@ var loadState = {
         game.load.audio('maracas',['assets/audio/maracas.ogg',]);
         game.load.audio('shuffle',['assets/audio/shuffle.ogg',]);
         game.load.audio('draw',['assets/audio/draw.ogg',]);
-        game.load.audio('discard',['assets/audio/discard.wav',]);
+        game.load.audio('draw_rare',['assets/audio/draw_rare.ogg',]);
+        game.load.audio('discard',['assets/audio/discard.ogg',]);
 
 
 
