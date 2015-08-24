@@ -47,10 +47,9 @@ var loadState = {
         game.load.image('card_template_rare' , 'assets/graphics/card_template_rare.png');
         game.load.image('card_overlay' , 'assets/graphics/card_overlay.png');
         game.load.image('card_cooldown' , 'assets/graphics/card_cooldown.png');
-        game.load.image('lifebar' , 'assets/graphics/lifebar.png');
+        game.load.image('lifebar_above' , 'assets/graphics/lifebar_above.png');
+        game.load.image('lifebar_under' , 'assets/graphics/lifebar_under.png');
         game.load.image('lifebar_full' , 'assets/graphics/lifebar_full.png');
-        game.load.image('lifesprite_full' , 'assets/graphics/lifesprite_full.png');
-        game.load.image('lifesprite_dead' , 'assets/graphics/lifesprite_dead.png');
         game.load.image('drawbar' , 'assets/graphics/drawbar.png');
         game.load.image('drawbar_full' , 'assets/graphics/drawbar_full.png');
         game.load.image('drawbar_full_boost' , 'assets/graphics/drawbar_full_boost.png');

@@ -74,14 +74,14 @@ var enemyData = {
     "support" : {
         "id" : "support",
         "health" : 5,
-        "speed" : 0.35,
+        "speed" : 0.42,
         "pattern" : "support",
         "damage" : 0,
         "cooldown" : 1, //Temps en secondes
-        "range" : 150,
+        "range" : 100,
         "score" : 50,
         "spawnthreshold" : 35,
-        "spawnchance" : 1,
+        "spawnchance" : 2,
     },
     "archer" : {
         "id" : "archer",

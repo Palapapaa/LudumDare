@@ -4,9 +4,9 @@ var thingsData = {
         "damage" : 1,
         "trajectory" : "lob",
         "dropchance" : 6,
-        "speed" : {"x" : 3, "y" : 4.5},
+        "speed" : {"x" : 3, "y" : 4.75},
         "properties" : ["piercing",],
-        "offset" : {"x" : 10, "y" : 150},
+        "offset" : {"x" : 10, "y" : 160},
 
     },
     'cochon' : {

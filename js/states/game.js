@@ -429,14 +429,12 @@ var gameState = {
     },
 
     addLifebar: function(){
-        this.lifebar     = game.add.sprite(game.global.gameWidth/2,25,"lifebar");
-        this.lifebar.x-=this.lifebar.width/2;
-        this.lifebarFull = game.add.sprite(game.global.gameWidth/2,27,"lifebar_full");
+        this.lifebar_under     = game.add.sprite(game.global.gameWidth/2,26,"lifebar_under");
+        this.lifebar_under.x-=this.lifebar_under.width/2;
+        this.lifebarFull = game.add.sprite(game.global.gameWidth/2,26,"lifebar_full");
         this.lifebarFull.x-=this.lifebarFull.width/2;
-        this.lifespriteFull = game.add.sprite(this.lifebarFull.x+this.lifebarFull.width+10,30,"lifesprite_full");
-        this.lifespriteFull.anchor.setTo(0.5,0.5);
-        this.lifespriteDead = game.add.sprite(this.lifebarFull.x-10,30,"lifesprite_dead");
-        this.lifespriteDead.anchor.setTo(0.5,0.5);
+        this.lifebar_above     = game.add.sprite(game.global.gameWidth/2,17,"lifebar_above");
+        this.lifebar_above.x-=this.lifebar_above.width/2;
 
     },
 
@@ -840,7 +838,7 @@ var gameState = {
         cardObj.overlay.thing=cardObj.thing;
         cardObj.overlay.handIndex=handIndex;
         cardObj.overlay.events.onInputDown.add(this.cardOnClick,this);
-        if(this.stock.length>24){
+        if(this.stock.length>20){
             cardObj.discard =this.game.add.sprite(205+handIndex * 75 , 500, 'sprite_discard');
             cardObj.discard.anchor.setTo(0.5, 0.5);
             cardObj.discard.inputEnabled=true;
@@ -872,7 +870,7 @@ var gameState = {
     discard : function(sprite, pointer){
         console.log(sprite.thing);        
         var thing = sprite.thing;
-        if(this.stock.length>24){
+        if(this.stock.length>20){
             this.gameSounds.discard.play();
             this.removeFromHand(sprite.handIndex);
             this.stock.splice(thing,1);
