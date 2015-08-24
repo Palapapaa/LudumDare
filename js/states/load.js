@@ -60,6 +60,7 @@ var loadState = {
         game.load.image('particle_fire' , 'assets/graphics/particle_fire.png');
         game.load.image('particle_damage' , 'assets/graphics/particle_damage.png');
         game.load.image('explosion_overlay' , 'assets/graphics/explosion_overlay.png');
+        game.load.image('sprite_discard' , 'assets/graphics/sprite_discard.png');
 
         // Chargement des sons
         game.load.audio('draw_rare',['assets/audio/draw_rare.wav',]);
@@ -72,6 +73,7 @@ var loadState = {
         game.load.audio('maracas',['assets/audio/maracas.ogg',]);
         game.load.audio('shuffle',['assets/audio/shuffle.ogg',]);
         game.load.audio('draw',['assets/audio/draw.ogg',]);
+        game.load.audio('discard',['assets/audio/discard.wav',]);
 
 
 

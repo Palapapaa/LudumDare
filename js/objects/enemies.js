@@ -9,7 +9,7 @@ var enemyData = {
         "range" : -15,
         "score" : 10,
         "spawnthreshold" : 0,
-        "spawnchance" : 7,
+        "spawnchance" : 5,
     },
     "armored" : {
         "id" : "armored",
@@ -44,7 +44,7 @@ var enemyData = {
         "cooldown" : 1, //Temps en secondes
         "range" : 10,
         "score" : 20,
-        "spawnthreshold" : 20,
+        "spawnthreshold" : 25,
         "spawnchance" : 3,
     },
     "support" : {
@@ -56,7 +56,7 @@ var enemyData = {
         "cooldown" : 1, //Temps en secondes
         "range" : 150,
         "score" : 50,
-        "spawnthreshold" : 25,
+        "spawnthreshold" : 35,
         "spawnchance" : 1,
     },
     "archer" : {
@@ -64,11 +64,11 @@ var enemyData = {
         "health" : 3,
         "speed" : 0.5,
         "pattern" : "walking",
-        "damage" : 3,
+        "damage" : 2,
         "cooldown" : 1, //Temps en secondes
         "range" : 250,
-        "score" : 50,
-        "spawnthreshold" : 20,
+        "score" : 30,
+        "spawnthreshold" : 40,
         "spawnchance" : 2,
     },
 

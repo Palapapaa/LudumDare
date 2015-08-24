@@ -29,33 +29,38 @@ var gameState = {
         this.deck = [];
         this.stock = [];
         //stock initial de cartes
-        for(var i=0; i<4;i++){
+        for(var i=0; i<3;i++){
             this.stock.push(thingsData.caddie);
         }
-        for(var i=0; i<2;i++){
+        for(var i=0; i<0;i++){
             this.stock.push(thingsData.caddie_TNT);
         }
-        for(var i=0; i<10;i++){
+        for(var i=0; i<7;i++){
             this.stock.push(thingsData.rock);
         }
-        for(var i=0; i<3;i++){
+        for(var i=0; i<0;i++){
             this.stock.push(thingsData.eggplant);
         }
-        for(var i=0; i<5;i++){
+        for(var i=0; i<0;i++){
             this.stock.push(thingsData.paperplane);
         }
-        for(var i=0; i<10;i++){
+        for(var i=0; i<3;i++){
             this.stock.push(thingsData.duck);
         }
-        for(var i=0; i<2;i++){
+        for(var i=0; i<1;i++){
             this.stock.push(thingsData.molotov);
         }
         // cards currently visible on the GUI the player can use
         this.hand = [];
-        this.handSprites = [];
 
-        
+        //chance for item drops
+        var keys = Object.keys(thingsData);
+        this.totalDropChance = 0;
+        for(var i = 0,l = keys.length;i<l;i++){
+            this.totalDropChance+=thingsData[keys[i]].dropchance;
 
+        }
+        console.log(this.totalDropChance);
 
         this.availableEnemies = ["base"];
         this.totalEnemySpawnChance = enemyData.base.spawnchance;
@@ -74,6 +79,7 @@ var gameState = {
         this.gameSounds.enemy_destroyed = game.add.audio("enemy_destroyed");
         this.gameSounds.draw_rare = game.add.audio("draw_rare");
         this.gameSounds.draw = game.add.audio("draw");
+        this.gameSounds.discard = game.add.audio("discard");
         this.gameSounds.shuffle = game.add.audio("shuffle");
 
         this.gameSounds.maracas = game.add.audio("maracas");
@@ -86,7 +92,7 @@ var gameState = {
         this.deadEnnemies.setAll('anchor.x', 0.5);
         this.deadEnnemies.setAll('anchor.y', 0.5);
         game.physics.enable(this.deadEnnemies, Phaser.Physics.ARCADE);
-        this.drawCooldown=4000;
+        this.drawCooldown=3000;
         this.drawTimer=this.drawCooldown;
 
          
@@ -197,7 +203,7 @@ var gameState = {
 
         
         this.shuffling = false;
-        this.shuffleCooldown=5000;
+        this.shuffleCooldown=4500;
         this.shuffleTimer=this.shuffleCooldown;
         this.shuffleEvent = null;
 
@@ -205,7 +211,7 @@ var gameState = {
 
         this.initDeck();
         //draw more cards at the beginning
-        for(var i =3;i<5;i++){
+        for(var i =3;i<4;i++){
             game.time.events.add(i*500, this.drawCards, this, 1,false);
         }
         
@@ -249,8 +255,7 @@ var gameState = {
                 this.ennemies.children[i].body.velocity.x = 0;
                 if(this.ennemies.children[i].attackCooldown > 0)
                   this.ennemies.children[i].attackCooldown--;
-                else{
-                  this.ennemyAttackMonster(this.ennemies.children[i].damage);
+                else{                  
                   this.ennemies.children[i].attackCooldown = 60;
                   if(this.ennemies.children[i].type === "archer"){
                     var arrow = this.arrows.getFirstDead();
@@ -260,6 +265,8 @@ var gameState = {
                       arrow.speedY = -1;
                       arrow.reset(this.ennemies.children[i].x , this.ennemies.children[i].y);
                     }
+                  }else{
+                      this.ennemyAttackMonster(this.ennemies.children[i].damage);
                   }
                 }
 
@@ -381,7 +388,8 @@ var gameState = {
                 }
               }
           }
-
+        
+        //barre de la pioche
         if(this.shuffling){
             this.shuffleTimer -=this.shuffleEvent.timer.elapsed;
             this.drawBarFull.scale.setTo(1,-this.shuffleTimer/this.shuffleCooldown);
@@ -391,11 +399,13 @@ var gameState = {
                 this.shuffleEvent = game.time.events.add(this.shuffleCooldown, this.initDeck, this);
                 this.shuffleTimer = this.shuffleCooldown;
             }else{
-                this.drawTimer -=this.autoDraw.timer.elapsed;
-                this.drawBarFull.scale.setTo(1,-this.drawTimer/this.drawCooldown);
+                if(this.deck.length!==0){
+                    this.drawTimer -=this.autoDraw.timer.elapsed;
+                    this.drawBarFull.scale.setTo(1,-this.drawTimer/this.drawCooldown);
+                }
+                
             }
         }
-
 
 
         if(this.defaultCard.timer>=0){
@@ -579,6 +589,11 @@ var gameState = {
         this.updateScore();
         this.enemiesKilled++;
         this.updateAvailableEnemies();
+        
+        //drop a card every several ennemies killed
+        if(this.enemiesKilled%6===3){            
+            this.addCardToStock(this.getCardDrop(this.randomGenerator.integerInRange(0,this.totalDropChance)));
+        }
 
     },
 
@@ -659,6 +674,20 @@ var gameState = {
         }
         return type;
     },
+    
+    getCardDrop : function(roll){
+        var current = 0;
+        var id = "rock";
+        //console.log(type);
+        var keys = Object.keys(thingsData);
+        for(var i =0,l = keys.length;i<l;i++){
+            if(roll>=current && roll<current+thingsData[keys[i]].dropchance){
+                id=thingsData[keys[i]].id;break;
+            }
+            current+=thingsData[keys[i]].dropchance;
+        }
+        return thingsData[id];
+    },
 
     initDeck : function(){
         this.deck=JSON.parse(JSON.stringify(this.stock));
@@ -703,7 +732,12 @@ var gameState = {
         card.icon.destroy(true);
         card.trajectory.destroy(true);
         card.damage.destroy(true);
-        card.overlay.destroy(true);
+        if(card.discard){
+            card.discard.destroy(true);
+        }
+        if(card.overlay){
+            card.overlay.destroy(true);
+        }
 
     },
 
@@ -724,7 +758,7 @@ var gameState = {
             console.log("trying to draw "+howMany+" card(s)...");
 
             for(var i=0; i<howMany;i++){
-                if(this.hand.length<5){
+                if(this.hand.length<6){
 
                     var card = this.deck.shift();
                     this.deckBack.frame = Math.min(3,this.deck.length);
@@ -745,6 +779,7 @@ var gameState = {
 
                 }
             }
+            this.redrawHand();
         }
 
     },
@@ -752,22 +787,29 @@ var gameState = {
     addCardToHand : function(cardObj,handIndex){
 
         if(cardObj.thing.properties.indexOf("rare")>-1){
-            cardObj.template = this.game.add.sprite(200+handIndex * 70, 495, 'card_template_rare');
+            cardObj.template = this.game.add.sprite(200+handIndex * 75, 495, 'card_template_rare');
         }else{
-            cardObj.template = this.game.add.sprite(200+handIndex * 70, 495, 'card_template');
+            cardObj.template = this.game.add.sprite(200+handIndex * 75, 495, 'card_template');
         }
-        cardObj.icon = this.game.add.sprite(200+handIndex * 70 + 32, 532, 'icon_'+cardObj.thing.id);
+        cardObj.icon = this.game.add.sprite(200+handIndex * 75 + 32, 532, 'icon_'+cardObj.thing.id);
         cardObj.icon.anchor.setTo(0.5, 0.5);
-        cardObj.trajectory = this.game.add.sprite(248+handIndex * 70, 584, 'trajectory_'+cardObj.thing.trajectory);
+        cardObj.trajectory = this.game.add.sprite(248+handIndex * 75, 584, 'trajectory_'+cardObj.thing.trajectory);
         cardObj.trajectory.anchor.setTo(0.5, 0.5);
-        cardObj.damage = this.game.add.text(219+handIndex * 70, 585, cardObj.thing.damage,{"fontSize": 18});
+        cardObj.damage = this.game.add.text(219+handIndex * 75, 585, cardObj.thing.damage,{"fontSize": 18});
         cardObj.damage.anchor.setTo(0.5, 0.5);
-        cardObj.overlay = this.game.add.sprite(200+handIndex * 70, 495, 'card_overlay');
+        cardObj.overlay = this.game.add.sprite(200+handIndex * 75, 495, 'card_overlay');
         cardObj.overlay.inputEnabled=true;
         cardObj.overlay.thing=cardObj.thing;
         cardObj.overlay.handIndex=handIndex;
         cardObj.overlay.events.onInputDown.add(this.cardOnClick,this);
-
+        if(this.stock.length>24){
+            cardObj.discard =this.game.add.sprite(205+handIndex * 75 , 500, 'sprite_discard');
+            cardObj.discard.anchor.setTo(0.5, 0.5);
+            cardObj.discard.inputEnabled=true;
+            cardObj.discard.thing=cardObj.thing;
+            cardObj.discard.handIndex=handIndex;
+            cardObj.discard.events.onInputDown.add(this.discard,this);
+        }
         return cardObj;
 
     },
@@ -788,6 +830,54 @@ var gameState = {
             this.removeFromHand(sprite.handIndex);
         }
     },
+    
+    discard : function(sprite, pointer){
+        console.log(sprite.thing);        
+        var thing = sprite.thing;
+        if(this.stock.length>24){
+            this.gameSounds.discard.play();
+            this.removeFromHand(sprite.handIndex);
+            this.stock.splice(thing,1);
+            this.deckDisplay.text=this.deck.length+" / "+this.stock.length;
+        }
+    },
+    
+    addCardToStock : function(thing){
+        //this.deck.push(thing);
+        var cardObj = {"thing" : thing,};
+        var xInit = this.monster.x + this.monster.width/2 -32;
+        var yInit = this.monster.y - this.monster.height/4;
+        
+        if(cardObj.thing.properties.indexOf("rare")>-1){
+            cardObj.template = this.game.add.sprite(xInit, yInit, 'card_template_rare');
+        }else{
+            cardObj.template = this.game.add.sprite(xInit , yInit, 'card_template');
+        }
+        cardObj.icon = this.game.add.sprite(xInit + 32, yInit +37, 'icon_'+cardObj.thing.id);
+        cardObj.icon.anchor.setTo(0.5, 0.5);
+        cardObj.trajectory = this.game.add.sprite(xInit + 48, yInit +89, 'trajectory_'+cardObj.thing.trajectory);
+        cardObj.trajectory.anchor.setTo(0.5, 0.5);
+        cardObj.damage = this.game.add.text(xInit + 19 , yInit + 90, cardObj.thing.damage,{"fontSize": 18});
+        cardObj.damage.anchor.setTo(0.5, 0.5);
+        
+        //make the card move and gradually disappear
+        var moveDelay = 2500;
+        var disappearDelay = 2000;
+        
+        game.add.tween(cardObj.template).to({"y" : yInit-75},moveDelay).easing(Phaser.Easing.Exponential.Out).start();
+        game.add.tween(cardObj.template).to({"alpha" : 0},disappearDelay).easing(Phaser.Easing.Exponential.In).start();
+        game.add.tween(cardObj.icon).to({"y" : yInit-75+37},moveDelay).easing(Phaser.Easing.Exponential.Out).start();
+        game.add.tween(cardObj.icon).to({"alpha" : 0},disappearDelay).easing(Phaser.Easing.Exponential.In).start();
+        game.add.tween(cardObj.trajectory).to({"y" : yInit-75 +89},moveDelay).easing(Phaser.Easing.Exponential.Out).start();
+        game.add.tween(cardObj.trajectory).to({"alpha" : 0},disappearDelay).easing(Phaser.Easing.Exponential.In).start();
+        game.add.tween(cardObj.damage).to({"y" : yInit-75 +90},moveDelay).easing(Phaser.Easing.Exponential.Out).start();
+        game.add.tween(cardObj.damage).to({"alpha" : 0},disappearDelay).easing(Phaser.Easing.Exponential.In).start();
+        
+        game.time.events.add(3000, this.destroyCard, this,cardObj);
+        
+        this.stock.push(thing);        
+        this.deckDisplay.text=this.deck.length+" / "+this.stock.length;
+    },
 
     ennemyAttackMonster : function(damage){
 
@@ -805,7 +895,8 @@ var gameState = {
     },
 
     killArrow : function(arrow){
-      console.log("crève")
-      arrow.kill();
+        this.ennemyAttackMonster(enemyData.archer.damage);
+        //console.log("crève")
+        arrow.kill();
     }
 };
