@@ -6,7 +6,7 @@ var enemyData = {
         "pattern" : "walking",
         "damage" : 1,
         "cooldown" : 1, //Temps en secondes
-        "range" : 10,
+        "range" : -15,
         "score" : 10,
         "spawnthreshold" : 0,
         "spawnchance" : 7,
@@ -18,7 +18,7 @@ var enemyData = {
         "pattern" : "walking",
         "damage" : 2,
         "cooldown" : 1, //Temps en secondes
-        "range" : 10,
+        "range" : -15,
         "score" : 25,
         "spawnthreshold" : 10,
         "spawnchance" : 5,
@@ -30,10 +30,10 @@ var enemyData = {
         "pattern" : "walking",
         "damage" : 5,
         "cooldown" : 1, //Temps en secondes
-        "range" : 10,
+        "range" : -15,
         "score" : 50,
-        "spawnthreshold" : 25,
-        "spawnchance" : 3,
+        "spawnthreshold" : 45,
+        "spawnchance" : 5,
     },
     "flying_base" : {
         "id" : "flying_base",
@@ -44,7 +44,7 @@ var enemyData = {
         "cooldown" : 1, //Temps en secondes
         "range" : 10,
         "score" : 20,
-        "spawnthreshold" : 15,
+        "spawnthreshold" : 20,
         "spawnchance" : 3,
     },
     "support" : {
@@ -56,7 +56,7 @@ var enemyData = {
         "cooldown" : 1, //Temps en secondes
         "range" : 150,
         "score" : 50,
-        "spawnthreshold" : 20,
+        "spawnthreshold" : 25,
         "spawnchance" : 1,
     },
     "archer" : {

@@ -269,8 +269,12 @@ var gameState = {
               }else{
                 this.ennemies.children[i].body.velocity.x = this.ennemies.children[i].initialSpeed;
                 if(this.enemiesGotSpeedBoost === true){
-                  this.ennemies.children[i].x+=1;
+                  this.ennemies.children[i].x+=0.5;
                 }
+                if(this.ennemies.children[i].animations.currentAnim.name!=="move"){
+                    this.ennemies.children[i].animations.play('move');
+                }
+                   
               }
 
 
@@ -609,6 +613,7 @@ var gameState = {
             if(projectile.properties.indexOf('knockback') > -1){
 
                 game.add.tween(ennemy).to({"x" : ennemy.x-75}).easing(Phaser.Easing.Exponential.Out).start();
+               
             }
             if(projectile.properties.indexOf('fire') > -1){
 
