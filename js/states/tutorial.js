@@ -61,14 +61,14 @@ var tutorialState = {
                 case 2:{
                     this.indic1.text="Foolish adventurers invaded your home with the intent of killing you!\nKick them out before they get to you!";
                     this.indic1.x = 100;
-                    this.indic1.y = 250;
+                    this.indic1.y = 275;
                     this.mask.loadTexture("tutorial_step"+this.tutorial_step);
                     break;   
                 }
                 case 3:{
-                    this.indic1.text="Click on the cards to throw things at them!\nKill enough enemies to get more cards.\nYou deck will be shuffled when both your deck and your hand are empty\nOnce you have enough cards, you can remove some from your deck.";
+                    this.indic1.text="Click on the cards to throw things at them!\nKill enough enemies to get more cards.\nYou deck will be shuffled when both your deck and your hand are empty.\nOnce you have enough cards, you can remove some from your deck.";
                     this.indic1.x = 100;
-                    this.indic1.y = 350;
+                    this.indic1.y = 360;
                     this.mask.loadTexture("tutorial_step"+this.tutorial_step);
                     break;   
                 }

@@ -2,12 +2,12 @@ var gameState = {
 
     //chargement des params du niveau
     init : function(){
-        console.log("Game state init");
+        //console.log("Game state init");
 
     },
 
     preload : function(){
-        console.log("Game state preload");
+        //console.log("Game state preload");
         this.UP = -1;
         this.DOWN = 1;
         this.LEFT = -1;
@@ -63,7 +63,7 @@ var gameState = {
             this.totalDropChance+=thingsData[keys[i]].dropchance;
 
         }
-        console.log(this.totalDropChance);
+        //console.log(this.totalDropChance);
 
         this.availableEnemies = ["base"];
         this.totalEnemySpawnChance = enemyData.base.spawnchance;
@@ -105,7 +105,7 @@ var gameState = {
         this.randomGenerator = new Phaser.RandomDataGenerator(1337);
 
 
-        console.log("game state create() finished");
+        //console.log("game state create() finished");
 
         //Ajout du monstre
         this.monster = game.add.sprite(650, 240, 'monster');
@@ -661,7 +661,7 @@ var gameState = {
                 ennemy.tint="0xff4400";
             }
         }
-        //console.log(ennemy.life);
+        ////console.log(ennemy.life);
 
       }
 
@@ -690,7 +690,7 @@ var gameState = {
     getAvailableEnemyType : function(roll){
         var current = 0;
         var type = "base";
-        //console.log(type);
+        ////console.log(type);
         for(var i =0,l = this.availableEnemies.length;i<l;i++){
             if(roll>=current && roll<current+enemyData[this.availableEnemies[i]].spawnchance){
                 type=this.availableEnemies[i];break;
@@ -703,7 +703,7 @@ var gameState = {
     getCardDrop : function(roll){
         var current = 0;
         var id = "rock";
-        //console.log(type);
+        ////console.log(type);
         var keys = Object.keys(thingsData);
         for(var i =0,l = keys.length;i<l;i++){
             if(roll>=current && roll<current+thingsData[keys[i]].dropchance){
@@ -791,7 +791,7 @@ var gameState = {
                }
             }
             if(!howMany)howMany=1;
-            console.log("trying to draw "+howMany+" card(s)...");
+            //console.log("trying to draw "+howMany+" card(s)...");
 
             for(var i=0; i<howMany;i++){
                 if(this.hand.length<6){
@@ -800,7 +800,7 @@ var gameState = {
                     this.deckBack.frame = Math.min(3,this.deck.length);
                     this.deckDisplay.text=this.deck.length+" / "+this.stock.length;
                     if(typeof(card) !== "undefined"){
-                        console.log("drawing card...");
+                        //console.log("drawing card...");
                         if(card.properties.indexOf("rare")>-1){
                             this.gameSounds.draw_rare.play();
                         }else{
@@ -851,7 +851,7 @@ var gameState = {
     },
 
     cardOnClick : function(sprite, pointer){
-        console.log(sprite.thing);
+        //console.log(sprite.thing);
         var thing = sprite.thing;
         if(sprite.defaultCard){
             if(this.defaultCard.timer<=0){
@@ -868,7 +868,7 @@ var gameState = {
     },
     
     discard : function(sprite, pointer){
-        console.log(sprite.thing);        
+        //console.log(sprite.thing);        
         var thing = sprite.thing;
         if(this.stock.length>20){
             this.gameSounds.discard.play();
@@ -930,12 +930,12 @@ var gameState = {
             game.state.start('gameover', true, false, this.score);
           }
           this.lifebarFull.scale.setTo(this.monster.life / 100, 1);
-          //console.log(damage);
+          ////console.log(damage);
     },
 
     killArrow : function(arrow){
         this.ennemyAttackMonster(enemyData.archer.damage);
-        //console.log("crève")
+        ////console.log("crève")
         arrow.kill();
     }
 };
