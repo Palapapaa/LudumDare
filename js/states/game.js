@@ -35,7 +35,7 @@ var gameState = {
         for(var i=0; i<0;i++){
             this.stock.push(thingsData.caddie_TNT);
         }
-        for(var i=0; i<7;i++){
+        for(var i=0; i<5;i++){
             this.stock.push(thingsData.rock);
         }
         for(var i=0; i<0;i++){
@@ -52,6 +52,15 @@ var gameState = {
         }
         for(var i=0; i<1;i++){
             this.stock.push(thingsData.molotov);
+        }
+        for(var i=0; i<0;i++){
+            this.stock.push(thingsData.saucisse);
+        }
+        for(var i=0; i<0;i++){
+            this.stock.push(thingsData.cookie);
+        }
+        for(var i=0; i<0;i++){
+            this.stock.push(thingsData.pepper);
         }
         // cards currently visible on the GUI the player can use
         this.hand = [];
@@ -95,10 +104,7 @@ var gameState = {
         this.deadEnnemies.setAll('anchor.x', 0.5);
         this.deadEnnemies.setAll('anchor.y', 0.5);
         game.physics.enable(this.deadEnnemies, Phaser.Physics.ARCADE);
-        this.drawCooldown=3000;
-        this.drawBoost=false;
-        this.drawCooldownBoost=1500;
-        this.drawTimer=this.drawCooldown;
+       
 
          
 
@@ -125,13 +131,13 @@ var gameState = {
         game.physics.arcade.collide(this.arrows,this.monster);
 
         
-        
+        this.distraction =false;
 
         // Groupe ennemi
         this.ennemies    = game.add.group();
         this.ennemies.enableBody = true;
         this.ennemies.createMultiple(25, "enemy_base");
-
+        this.ennemies.setAll('anchor.x', 0.5);
 
         //calques pour détecter les ennemis pris dans une explosion
         this.explosions    = game.add.group();
@@ -206,9 +212,13 @@ var gameState = {
         this.drawBarFull.scale.setTo(1,-1);
         this.deckDisplay = game.add.text(740, 490,"",{"fill" : "#CACACA","fontSize": 17});
 
+        this.drawCooldown=2750;        
+        this.drawCooldownBoost=1375;        
+        this.shuffleCooldown=3750;
         
+        this.drawBoost=false;
+        this.drawTimer=this.drawCooldown;
         this.shuffling = false;
-        this.shuffleCooldown=4500;
         this.shuffleTimer=this.shuffleCooldown;
         this.shuffleEvent = null;
 
@@ -216,9 +226,11 @@ var gameState = {
 
         this.initDeck();
         //draw more cards at the beginning
+        /*
         for(var i =3;i<4;i++){
             game.time.events.add(i*500, this.drawCards, this, 1,false);
         }
+        */
         
 
         //default card that is always available but has a cooldown
@@ -251,40 +263,47 @@ var gameState = {
       if(nbEnnemies > 0){
           for(var i = 0, l = nbEnnemies; i < l; ++i){
             if(this.ennemies.children[i].alive === true){
-              if(this.ennemies.children[i].body.velocity.y >  0 && this.ennemies.children[i].y > 200){
-                this.ennemies.children[i].body.velocity.y = 0;
+                var enemy = this.ennemies.children[i];
+              if(enemy.body.velocity.y >  0 && enemy.y > 200){
+                enemy.body.velocity.y = 0;
               }
 
-              if(this.ennemies.children[i].x > (585 -  this.ennemies.children[i].range)){
-                this.ennemies.children[i].animations.play('attack');
-                this.ennemies.children[i].body.velocity.x = 0;
-                if(this.ennemies.children[i].attackCooldown > 0)
-                  this.ennemies.children[i].attackCooldown--;
+              if(enemy.x > (585 -  enemy.range)&&!this.distraction){
+                enemy.animations.play('attack');
+                enemy.body.velocity.x = 0;
+                if(enemy.attackCooldown > 0)
+                  enemy.attackCooldown--;
                 else{                  
-                  this.ennemies.children[i].attackCooldown = 60;
-                  if(this.ennemies.children[i].type === "archer"){
+                  enemy.attackCooldown = 60;
+                  if(enemy.type === "archer"){
                     var arrow = this.arrows.getFirstDead();
                     if(arrow){
                       arrow.checkWorldBounds = true;
                       arrow.outOfBoundsKill = true;
                       arrow.speedY = -1;
-                      arrow.reset(this.ennemies.children[i].x , this.ennemies.children[i].y);
+                      arrow.reset(enemy.x , enemy.y);
                     }
                   }else{
-                      this.ennemyAttackMonster(this.ennemies.children[i].damage);
+                      this.ennemyAttackMonster(enemy.damage);
                   }
                 }
 
-                if(this.ennemies.children[i].type === "support"){
+                if(enemy.type === "support"){
                   gotBoostNextFrame = true;
                 }
               }else{
-                this.ennemies.children[i].body.velocity.x = this.ennemies.children[i].initialSpeed;
-                if(this.enemiesGotSpeedBoost === true){
-                  this.ennemies.children[i].x+=0.5;
-                }
-                if(this.ennemies.children[i].animations.currentAnim.name!=="move"){
-                    this.ennemies.children[i].animations.play('move');
+                  if(this.distraction){
+                      enemy.body.velocity.x = -(enemy.initialSpeed);
+                        enemy.x-=0.5;
+                  }else{
+                      enemy.body.velocity.x = enemy.initialSpeed;
+                        if(this.enemiesGotSpeedBoost === true){
+                          enemy.x+=0.5;
+                        }
+                  }
+                
+                if(enemy.animations.currentAnim.name!=="move"){
+                    enemy.animations.play('move');
                 }
                    
               }
@@ -317,48 +336,81 @@ var gameState = {
           }
       }
       //update projectiles according to their trajectory
+        this.distraction = false;
+        this.ennemies.setAll('scale.x', 1);
       var nbProjectiles = this.projectiles.children.length;
       if(nbProjectiles  > 0){
         for(var i = 0, l = nbProjectiles; i < l; ++i){
             if(this.projectiles.children[i].alive){
-                switch(this.projectiles.children[i].trajectory){
+                var projectile = this.projectiles.children[i];
+                if(projectile.properties.indexOf('distraction') > -1){
+                    this.distraction=true;
+                    this.ennemies.setAll('scale.x', -1);
+                }                
+                switch(projectile.trajectory){
                     case "lob" : {
-                        this.projectiles.children[i].angle-=10;
-                        this.projectiles.children[i].x -= this.projectiles.children[i].speedX;
-                        this.projectiles.children[i].y -= this.projectiles.children[i].speedY;
-                        this.projectiles.children[i].speedY -= 0.1;
-                        if(this.projectiles.children[i].y>450){
-                            if(this.projectiles.children[i].properties.indexOf('explosive') > -1){
+                        if(!projectile.mineLanded){
+                            projectile.angle-=10;                                
+                        }
+                        projectile.x -= projectile.speedX;
+                        projectile.y -= projectile.speedY;
+                        projectile.speedY -= 0.1;
+                        if(projectile.y>450){
+                            if(projectile.properties.indexOf('explosive') > -1 && projectile.properties.indexOf('mine') < 0){
                                 this.gameSounds.enemy_destroyed.play();
-                                this.addExplosion(this.projectiles.children[i].x,this.projectiles.children[i].y,this.projectiles.children[i].damage,this.projectiles.children[i].properties);
-                                this.projectiles.children[i].kill();
-                            }else if(this.projectiles.children[i].properties.indexOf('bounce') > -1){
-                                this.projectiles.children[i].speedY=Math.abs(this.projectiles.children[i].speedY);
-                                this.projectiles.children[i].y=450;
-                                this.gameSounds[this.projectiles.children[i].type].play();
+                                this.addExplosion(projectile.x,projectile.y,projectile.damage,projectile.properties);
+                                projectile.kill();
+                            }else if(projectile.properties.indexOf('bounce') > -1){
+                                projectile.speedY=Math.abs(projectile.speedY);
+                                projectile.y=450;
+                                this.gameSounds[projectile.type].play();
+                            }else if(projectile.properties.indexOf('mine') > -1){                                                                   
+                                projectile.y=450;
+                                if(!projectile.mineLanded){ 
+                                    projectile.speedX=0;  
+                                    projectile.mineLanded=true;  
+                                    game.time.events.add(2500, this.activateMine, this, projectile);
+                                }
+                                
                             }else{
-                                this.projectiles.children[i].kill();
+                                projectile.kill();
                             }
 
                         }
                         break;
                     }
                     case "groundstraight" : {
-                        this.projectiles.children[i].x -= this.projectiles.children[i].speedX;
-                        if(this.projectiles.children[i].x<-50){
-                            this.projectiles.children[i].kill();
+                        projectile.x -= projectile.speedX;
+                        if(projectile.x<-50){
+                            projectile.kill();
+                        }
+                        break;
+                    }
+                    case "boomerang" : {                        
+                        projectile.angle-=10;
+                        projectile.x -= projectile.speedX;
+                        //boomerang piercing resets when coming back
+                        if(projectile.speedX>0&&projectile.speedX-0.05<=0){
+                            projectile.projectileId = this.nextProjectileId;
+                            this.nextProjectileId++;
+                        }
+                        if(projectile.speedX<=0){
+                            projectile.y -= projectile.speedY;
+                        }
+                        projectile.speedX -= 0.05; if(projectile.x<-50||projectile.x>game.global.gameWidth+50){
+                            projectile.kill();
                         }
                         break;
                     }
                     case "glide" : {
-                        this.projectiles.children[i].x -= this.projectiles.children[i].speedX;
-                        if(this.projectiles.children[i].x<150){
-                            this.projectiles.children[i].angle-=8;
-                            this.projectiles.children[i].y += this.projectiles.children[i].speedY;
+                        projectile.x -= projectile.speedX;
+                        if(projectile.x<150){
+                            projectile.angle-=8;
+                            projectile.y += projectile.speedY;
                         }
-                        if(this.projectiles.children[i].y>450){
+                        if(projectile.y>450){
 
-                           this.projectiles.children[i].kill();
+                           projectile.kill();
 
 
                         }
@@ -516,7 +568,11 @@ var gameState = {
                 projectile.speedX = projectileData.speed.x;
                 projectile.speedY = projectileData.speed.y;
                 projectile.type=type;
-
+                projectile.mineActive=false;
+                projectile.mineLanded=false;
+                if(projectileData.properties.indexOf("mine")>-1){                    
+                    projectile.tint="0x666666";
+                }
                 projectile.projectileId = this.nextProjectileId;
                 this.nextProjectileId++;
                 projectile.checkWorldBounds = true;
@@ -625,7 +681,7 @@ var gameState = {
 
     damageEnnemy: function(projectile, ennemy) {
       //Si l'ennemi ne s'est pas pris de dégat par ce projectile
-      if(ennemy.damageBy.indexOf(projectile.projectileId) === -1){
+      if(ennemy.damageBy.indexOf(projectile.projectileId) === -1 && ((projectile.properties.indexOf('mine')>-1&&projectile.mineActive)||projectile.properties.indexOf('mine')===-1)){
         ennemy.damageBy.push(projectile.projectileId);          
         ennemy.life -= projectile.damage;
         //Si le projectile n'est pas perforant
@@ -917,7 +973,11 @@ var gameState = {
         this.deck.push(thing);        
         this.deckDisplay.text=this.deck.length+" / "+this.stock.length;
     },
-
+    activateMine : function(projectile){
+        projectile.mineActive=true;
+        projectile.tint="0xffffff";
+        
+    },
     ennemyAttackMonster : function(damage){
 
         this.gameSounds.player_hit.play();

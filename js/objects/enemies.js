@@ -2,7 +2,7 @@ var enemyData = {
     "base" : {
         "id" : "base",
         "health" : 2,
-        "speed" : 0.75,
+        "speed" : 0.85,
         "pattern" : "walking",
         "damage" : 1,
         "cooldown" : 1, //Temps en secondes
@@ -13,8 +13,8 @@ var enemyData = {
     },
     "fast" : {
         "id" : "fast",
-        "health" : 2,
-        "speed" : 1,
+        "health" : 3,
+        "speed" : 1.2,
         "pattern" : "walking",
         "damage" : 1,
         "cooldown" : 1, //Temps en secondes
@@ -26,7 +26,7 @@ var enemyData = {
     "armored" : {
         "id" : "armored",
         "health" : 4,
-        "speed" : 0.5,
+        "speed" : 0.6,
         "pattern" : "walking",
         "damage" : 2,
         "cooldown" : 1, //Temps en secondes
@@ -38,19 +38,19 @@ var enemyData = {
     "dark" : {
         "id" : "dark",
         "health" : 7,
-        "speed" : 0.37,
+        "speed" : 0.5,
         "pattern" : "walking",
-        "damage" : 5,
+        "damage" : 4,
         "cooldown" : 1, //Temps en secondes
         "range" : -15,
         "score" : 50,
         "spawnthreshold" : 150,
-        "spawnchance" : 3,
+        "spawnchance" : 5,
     },
     "flying_base" : {
         "id" : "flying_base",
         "health" : 4,
-        "speed" : 0.45,
+        "speed" : 0.5,
         "pattern" : "flying",
         "damage" : 2,
         "cooldown" : 1, //Temps en secondes
@@ -62,19 +62,19 @@ var enemyData = {
     "flying_dark" : {
         "id" : "flying_dark",
         "health" : 6,
-        "speed" : 0.4,
+        "speed" : 0.45,
         "pattern" : "flying",
-        "damage" : 5,
+        "damage" : 4,
         "cooldown" : 1, //Temps en secondes
         "range" : 10,
         "score" : 70,
-        "spawnthreshold" : 350,
+        "spawnthreshold" : 250,
         "spawnchance" : 4,
     },
     "support" : {
         "id" : "support",
         "health" : 5,
-        "speed" : 0.42,
+        "speed" : 0.45,
         "pattern" : "support",
         "damage" : 0,
         "cooldown" : 1, //Temps en secondes
@@ -85,10 +85,10 @@ var enemyData = {
     },
     "archer" : {
         "id" : "archer",
-        "health" : 3,
-        "speed" : 0.5,
+        "health" : 2,
+        "speed" : 0.6,
         "pattern" : "walking",
-        "damage" : 2,
+        "damage" : 3,
         "cooldown" : 1, //Temps en secondes
         "range" : 250,
         "score" : 30,

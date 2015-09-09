@@ -9,11 +9,41 @@ var thingsData = {
         "offset" : {"x" : 10, "y" : 160},
 
     },
+    'pepper' : {
+        "id" : 'pepper',
+        "damage" : 2,
+        "trajectory" : "lob",
+        "dropchance" : 4,
+        "speed" : {"x" : 2, "y" : 7},
+        "properties" : ["explosive","fire","mine","rare"],
+        "offset" : {"x" : 10, "y" : 110},
+
+    },
+    'cookie' : {
+        "id" : 'cookie',
+        "damage" : 0,
+        "trajectory" : "lob",
+        "dropchance" : 4,
+        "speed" : {"x" : 5, "y" : 7.75},
+        "properties" : ["piercing","distraction","rare"],
+        "offset" : {"x" : 10, "y" : 140},
+
+    },
+    'saucisse' : {
+        "id" : 'saucisse',
+        "damage" : 1,
+        "trajectory" : "boomerang",
+        "dropchance" : 15,
+        "speed" : {"x" : 6, "y" : 1},
+        "properties" : ["piercing",],
+        "offset" : {"x" : 10, "y" : 160},
+
+    },
     'cochon' : {
         "id" : 'cochon',
         "damage" : 0,
         "trajectory" : "boost",
-        "dropchance" : 2,
+        "dropchance" : 4,
         "speed" : {"x" : 3, "y" : 4.5},
         "properties" : ["rare","boost"],
         "offset" : {"x" : 10, "y" : 150},
