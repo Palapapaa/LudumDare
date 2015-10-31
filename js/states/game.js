@@ -212,8 +212,8 @@ var gameState = {
         this.drawBarFull.scale.setTo(1,-1);
         this.deckDisplay = game.add.text(740, 490,"",{"fill" : "#CACACA","fontSize": 17});
 
-        this.drawCooldown=2750;        
-        this.drawCooldownBoost=1375;        
+        this.drawCooldown=3000;        
+        this.drawCooldownBoost=1500;        
         this.shuffleCooldown=3750;
         
         this.drawBoost=false;
